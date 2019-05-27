@@ -64,7 +64,6 @@ const styles = StyleSheet.create({
 });
 
 export default class MeetPerson extends Component<MeetPersonProps, MeetPersonState> {
-  //看看怎么用sessionList实现方便分组
   constructor(props: MeetPersonProps) {
     super(props);
     this.state = {

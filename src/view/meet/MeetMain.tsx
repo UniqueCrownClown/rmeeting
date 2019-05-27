@@ -5,21 +5,28 @@ import {
 import XButton from '../../components/XButton'
 import TabTitle, { TabTitleItem } from '../../components/TabTitle';
 import { NavigationScreenProp } from 'react-navigation';
+import HorizontalItem, { BasicItem } from '../../components/HorizontalItem';
+import Clock from '../../components/Clock';
+import SelectItem, { ISelectItem } from '../../components/SelectItem';
+import { pySegSort } from '../../utils/pingyin';
+import { element } from 'prop-types';
+export declare interface MeetItem extends BasicItem {
+}
 interface MeetMainProps {
   navigation: NavigationScreenProp<any>;
 }
 interface MeetMainState {
-  count: number,
   tabTitle: Array<string>,
-  showIndex: number
+  showIndex: number,
+  meetMainData: Array<MeetItem>
 }
 export default class MeetMain extends Component<MeetMainProps, MeetMainState> {
   constructor(props: MeetMainProps) {
     super(props);
     this.state = {
-      count: 0,
       tabTitle: ['已完成', '未完成'],
-      showIndex: -1
+      showIndex: -1,
+      meetMainData: [{ name: '123456', path: '123456path' }, { name: '654321', path: '654321path' }]
     }
   }
   static navigationOptions = ({ navigation }) => {
@@ -59,15 +66,45 @@ export default class MeetMain extends Component<MeetMainProps, MeetMainState> {
   }
 
   public render() {
+    const linkMan = ['张三', '李四', '王五', '赵六', '林七', '菜八'];
     return <View>
       <View>
         <Text>会议管理页</Text>
       </View>
-      <XButton text='按钮' onClick={() => Alert.alert('hahahaha')}></XButton>
-      <View><Text>{this.state.count}</Text></View>
       <View style={{ backgroundColor: '#fcb', width: 100, height: 100 }}>
         <Text>{this.state.showIndex}</Text>
       </View>
+      <View>
+        <HorizontalItem items={this.state.meetMainData}
+          handleSelect={this.handleSelect.bind(this)}
+          type={this.renderMeetItem} />
+      </View>
+      <View>
+        <Clock time="dadada" />
+      </View>
+      <SelectItem items={this.filterGroup(linkMan)} haha={this.haha.bind(this)} />
     </View>
   }
+
+  public filterGroup(items: Array<string>) {
+    return items.map(item =>
+      ({
+        name: item,
+        isSelect: false
+      }))
+  }
+  public haha(count: number) {
+    Alert.alert(count.toString())
+  }
+
+  handleSelect(path: string): void {
+    Alert.alert(path);
+  }
+
+  public renderMeetItem = (data: any) =>
+    <View style={{ flex: 0, width: 750, justifyContent: 'flex-start', flexDirection: 'row' }}>
+      <View>
+        <Text>{data.name}</Text>
+      </View>
+    </View>;
 }

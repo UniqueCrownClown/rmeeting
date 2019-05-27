@@ -69,6 +69,7 @@ export default class HorizontalItem extends Component<HorizontalItemProps, Horiz
       />
     );
   }
+  
   onSwipeOpen(rowIndex) {
     this.setState({
       rowIndex: rowIndex

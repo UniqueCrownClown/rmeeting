@@ -27,7 +27,7 @@ const RootStack = createStackNavigator(
     PrintFile: { screen: PrintFile}
   },
   {
-    initialRouteName: 'PrintMain',
+    initialRouteName: 'MeetMain',
     defaultNavigationOptions: {
       headerStyle: {
         backgroundColor: '#137BFE',

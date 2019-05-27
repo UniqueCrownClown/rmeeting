@@ -3,16 +3,16 @@ import PropTypes from 'prop-types';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 export declare interface TabTitleItem {
   text?: string;
-  activeIndex:number;
-  onClick: () => void;
+  activeIndex: number;
+  onClick?: () => void;
 }
 declare interface TabTitleProps {
   itemData?: Array<TabTitleItem>,
 }
 declare interface TabTitleState {
- activeIndex:number
+  activeIndex: number
 }
-export default class TabTitle extends Component<TabTitleProps,TabTitleState> {
+export default class TabTitle extends Component<TabTitleProps, TabTitleState> {
   constructor(props: TabTitleProps) {
     super(props);
     // this.state ={
@@ -29,11 +29,11 @@ export default class TabTitle extends Component<TabTitleProps,TabTitleState> {
     let xlist = null;
     if (itemData) {
       xlist = itemData.map((tabItem, index) =>
-      (<TouchableOpacity key={index} 
-      onPress={tabItem.onClick} style={tabItem.activeIndex === index?styles.ItemBlockActive:styles.ItemBlock}>
-        <Text style={styles.ItemBlockText}>{tabItem.text}
-        </Text>
-      </TouchableOpacity>))
+        (<TouchableOpacity key={index}
+          onPress={tabItem.onClick} style={tabItem.activeIndex === index ? styles.ItemBlockActive : styles.ItemBlock}>
+          <Text style={styles.ItemBlockText}>{tabItem.text}
+          </Text>
+        </TouchableOpacity>))
     }
     return (
       <View style={styles.ButtonWraper}>
@@ -50,16 +50,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    alignSelf:'center'
+    alignSelf: 'center'
   },
   ItemBlock: {
   },
   ItemBlockActive: {
-    borderBottomWidth:2,
-    borderColor:'#fff'
+    borderBottomWidth: 2,
+    borderColor: '#fff'
   },
   ItemBlockText: {
-    color:'#fff'
+    color: '#fff'
   }
 
 })
