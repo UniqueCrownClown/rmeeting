@@ -13,9 +13,11 @@ export declare interface MeetItem extends BasicItem {
 }
 declare interface HorizontalItemProps {
   items: Array<BasicItem>,
+  disableSwiper?: boolean,
   handleSelect: (name: string) => void,
   swiperPress?: (name: string) => void,
   type?: (data: any) => any
+  dropFresh?: () => void
 }
 declare interface HorizontalItemState {
   rowIndex: number
@@ -26,7 +28,6 @@ const styles = StyleSheet.create({
   },
   fileListItem: {
     width: 750,
-    height: 60,
     borderBottomWidth: 1,
     borderColor: '#f5f5f5',
     flex: 0,
@@ -45,6 +46,7 @@ export default class HorizontalItem extends Component<HorizontalItemProps, Horiz
       close={this.state.rowIndex !== index}
       onClose={() => (this.onSwipeClose(index))}
       autoClose={true}
+      disabled={this.props.disableSwiper}
       backgroundColor='#ffffff'>
       <TouchableOpacity
         key={item.name}
@@ -58,7 +60,7 @@ export default class HorizontalItem extends Component<HorizontalItemProps, Horiz
   </View>;
 
   public render() {
-    const { items, type } = this.props;
+    const { items, dropFresh } = this.props;
     const _keyExtractor = (item: FileItem, index: number) => item.name;
     return (
       <FlatList
@@ -66,10 +68,12 @@ export default class HorizontalItem extends Component<HorizontalItemProps, Horiz
         extraData={this.state.rowIndex}
         keyExtractor={_keyExtractor}
         renderItem={({ item, index }) => this.renderItem(item, index)}
+        refreshing={false}
+        onRefresh={dropFresh}
       />
     );
   }
-  
+
   onSwipeOpen(rowIndex) {
     this.setState({
       rowIndex: rowIndex

@@ -21,7 +21,7 @@ export default class TabTitle extends Component<TabTitleProps, TabTitleState> {
   }
   static propTypes = {
     text: PropTypes.string,
-    onClick: PropTypes.func.isRequired,
+    onClick: PropTypes.func,
   }
 
   render() {

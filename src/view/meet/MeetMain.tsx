@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet, View, Text, Button, Alert
+  StyleSheet, View, Text, Alert
 } from 'react-native';
 import XButton from '../../components/XButton'
 import TabTitle, { TabTitleItem } from '../../components/TabTitle';
@@ -26,7 +26,9 @@ export default class MeetMain extends Component<MeetMainProps, MeetMainState> {
     this.state = {
       tabTitle: ['已完成', '未完成'],
       showIndex: -1,
-      meetMainData: [{ name: '123456', path: '123456path' }, { name: '654321', path: '654321path' }]
+      meetMainData: [
+        { name: '123456', path: '123456path', time: '09:30-10:30', position: '会议室1' },
+        { name: '654321', path: '654321path', time: '09:30-10:30', position: '会议室1' }]
     }
   }
   static navigationOptions = ({ navigation }) => {
@@ -66,11 +68,7 @@ export default class MeetMain extends Component<MeetMainProps, MeetMainState> {
   }
 
   public render() {
-    const linkMan = ['张三', '李四', '王五', '赵六', '林七', '菜八'];
     return <View>
-      <View>
-        <Text>会议管理页</Text>
-      </View>
       <View style={{ backgroundColor: '#fcb', width: 100, height: 100 }}>
         <Text>{this.state.showIndex}</Text>
       </View>
@@ -79,22 +77,7 @@ export default class MeetMain extends Component<MeetMainProps, MeetMainState> {
           handleSelect={this.handleSelect.bind(this)}
           type={this.renderMeetItem} />
       </View>
-      <View>
-        <Clock time="dadada" />
-      </View>
-      <SelectItem items={this.filterGroup(linkMan)} haha={this.haha.bind(this)} />
     </View>
-  }
-
-  public filterGroup(items: Array<string>) {
-    return items.map(item =>
-      ({
-        name: item,
-        isSelect: false
-      }))
-  }
-  public haha(count: number) {
-    Alert.alert(count.toString())
   }
 
   handleSelect(path: string): void {
@@ -103,8 +86,13 @@ export default class MeetMain extends Component<MeetMainProps, MeetMainState> {
 
   public renderMeetItem = (data: any) =>
     <View style={{ flex: 0, width: 750, justifyContent: 'flex-start', flexDirection: 'row' }}>
+      <Clock time="10:30" />
       <View>
         <Text>{data.name}</Text>
+        <View>
+          <Text>{data.time}</Text>
+        <Text>{data.position}</Text>
       </View>
+    </View>
     </View>;
 }

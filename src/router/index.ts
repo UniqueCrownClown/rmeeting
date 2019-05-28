@@ -10,7 +10,9 @@ import AddMeet from '../view/meet/AddMeet';
 import PrintMain from '../view/print/PrintMain';
 import MeetTime from '../view/meet/MeetTime';
 import MeetPerson from '../view/meet/MeetPerson';
-import PrintFile from '../view/print/PrintFile'
+import PrintFile from '../view/print/PrintFile';
+import FileSelect from '../view/print/FileSelect';
+import PrintDetail from '../view/print/PrintDetail';
 const RootStack = createStackNavigator(
   {
     Toe: { screen: Toe },
@@ -24,10 +26,12 @@ const RootStack = createStackNavigator(
     MeetTime: { screen: MeetTime },
     MeetPerson: { screen: MeetPerson },
     PrintMain: { screen: PrintMain },
-    PrintFile: { screen: PrintFile}
+    PrintFile: { screen: PrintFile },
+    FileSelect: { screen: FileSelect },
+    PrintDetail:{screen: PrintDetail}
   },
   {
-    initialRouteName: 'MeetMain',
+    initialRouteName: 'PrintFile',
     defaultNavigationOptions: {
       headerStyle: {
         backgroundColor: '#137BFE',

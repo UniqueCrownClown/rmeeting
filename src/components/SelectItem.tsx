@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet, View, Text, SectionList, Alert, FlatList, TouchableOpacity
+  StyleSheet, View, Text, SectionList, TouchableNativeFeedback, Image
 } from 'react-native';
 import { pySegSort } from '../utils/pingyin';
 const styles = StyleSheet.create({
@@ -12,6 +12,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     flexDirection: 'row'
+  },
+  linkManItem2: {
+    borderBottomWidth: 1,
+    borderColor: '#f5f5f5',
+    height: 60,
+    flex: 0,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row-reverse'
   },
   outcircle: {
     width: 20,
@@ -30,7 +39,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   outcircleActive: {
-    backgroundColor: '#ddd'
+    backgroundColor: '#eee'
   },
   incircleActive: {
     backgroundColor: 'skyblue'
@@ -52,7 +61,8 @@ declare interface GroupSelectItem {
 }
 declare interface SelectItemProps {
   items: Array<ISelectItem>,
-  haha: (index: number) => void
+  haha: (index: string) => void,
+  type?: number
 }
 declare interface SelectItemState {
   items: any
@@ -61,8 +71,10 @@ export default class SelectItem extends Component<SelectItemProps, SelectItemSta
   constructor(props: SelectItemProps) {
     super(props);
     this.state = {
-      items: [{ title: 'A', data: [{ name: 'A111', isSelect: false }, { name: 'A222', isSelect: false }] },
-      { title: 'B', data: [{ name: 'B111', isSelect: false }, { name: 'B222', isSelect: false }] }]
+      items: [{
+        title: 'A',
+        data: [{ name: 'A111', isSelect: false }]
+      }]
     };
   }
   public render() {
@@ -73,7 +85,7 @@ export default class SelectItem extends Component<SelectItemProps, SelectItemSta
         <SectionList
           renderItem={({ item, index, section }) => this.renderItem(item, index)}
           renderSectionHeader={({ section: { title } }) => (
-            <Text style={{ fontWeight: "bold" }}>{title}</Text>
+            <Text style={{ fontWeight: "bold", fontSize: 20, padding: 4 }}>{title}</Text>
           )}
           sections={this.groupData(items)}
           keyExtractor={(item, index) => item + index}
@@ -82,13 +94,16 @@ export default class SelectItem extends Component<SelectItemProps, SelectItemSta
     );
   }
 
-  public renderItem(item, index) {
-    return <TouchableOpacity key={index} style={styles.linkManItem} onPress={() => this.props.haha(index)}>
-      <View style={item.isSelect ? [styles.outcircle, styles.outcircleActive] : styles.outcircle}>
-        <View style={item.isSelect ? [styles.incircle, styles.incircleActive] : styles.incircle}></View>
+  public renderItem(item: ISelectItem, index: number) {
+    return <TouchableNativeFeedback key={index} onPress={() => this.props.haha(item.name)}>
+      <View style={this.props.type === 2 ? styles.linkManItem2 : styles.linkManItem}>
+        <View style={item.isSelect ? [styles.outcircle, styles.outcircleActive] : styles.outcircle}>
+          <View style={item.isSelect ? [styles.incircle, styles.incircleActive] : styles.incircle}></View>
+        </View>
+        <Text style={styles.nameText}>{item.name}</Text>
+        {this.props.type === 2 ? <Image source={require('./../asserts/images/icon-4.png')} /> : null}
       </View>
-      <Text style={styles.nameText}>{item.name}</Text>
-    </TouchableOpacity>;
+    </TouchableNativeFeedback>;
   }
 
   public groupData(items: Array<ISelectItem>) {

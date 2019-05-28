@@ -65,7 +65,6 @@ export default class FileList extends Component<FileListContainerProps, FileList
   }
 
   public render() {
-    //看看怎么用flatList实现,能实现更好的性能
     const { items, handleSelect } = this.props;
     const haha = (item: FileItem, index: number) =>
       <TouchableOpacity

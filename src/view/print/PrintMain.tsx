@@ -39,13 +39,14 @@ export default class PrintMain extends Component<PrintMainProps, PrintMainState>
       ),
     }
   };
+
   componentDidMount() {
     this.props.navigation.setParams({ showModal: this.showModal })
   }
   showModal = () => {
     this.setState({ visibleModal: true });
   }
-  renderButton = (text, onPress) => (
+  renderButton = (text, onPress: () => void) => (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.button}>
         <Text>{text}</Text>
@@ -66,15 +67,8 @@ export default class PrintMain extends Component<PrintMainProps, PrintMainState>
     </View>
   );
 
-  renderListItem = (items: Array<BasicItem>) => {
-    return items.map((item) => { <View><Text>{item.name}</Text></View> })
-  }
-
   public render() {
     return <View style={styles.container}>
-      <View style={{ flex: 0 }}>
-        <Button title="文件选择页" onPress={() => this.props.navigation.navigate('PrintFile')}></Button>
-      </View>
       <View style={styles.sceneContainer}>
         <HorizontalItem items={this.state.haha}
           handleSelect={this.handleSelect.bind(this)}
@@ -91,6 +85,7 @@ export default class PrintMain extends Component<PrintMainProps, PrintMainState>
 
   handleSelect(path: string): void {
     Alert.alert(path);
+    this.props.navigation.navigate('PrintFile');
   }
 
   public renderPrintMain = (data: PrintItem) =>
