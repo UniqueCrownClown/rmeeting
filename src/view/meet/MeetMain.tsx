@@ -11,6 +11,8 @@ import SelectItem, { ISelectItem } from '../../components/SelectItem';
 import { pySegSort } from '../../utils/pingyin';
 import { element } from 'prop-types';
 export declare interface MeetItem extends BasicItem {
+  time: string,
+  position: string
 }
 interface MeetMainProps {
   navigation: NavigationScreenProp<any>;
@@ -25,10 +27,10 @@ export default class MeetMain extends Component<MeetMainProps, MeetMainState> {
     super(props);
     this.state = {
       tabTitle: ['已完成', '未完成'],
-      showIndex: -1,
+      showIndex: 0,
       meetMainData: [
         { name: '123456', path: '123456path', time: '09:30-10:30', position: '会议室1' },
-        { name: '654321', path: '654321path', time: '09:30-10:30', position: '会议室1' }]
+        { name: '654321', path: '654321path', time: '13:30-15:30', position: '会议室1' }]
     }
   }
   static navigationOptions = ({ navigation }) => {
@@ -68,31 +70,28 @@ export default class MeetMain extends Component<MeetMainProps, MeetMainState> {
   }
 
   public render() {
+    const { meetMainData, showIndex } = this.state;
     return <View>
-      <View style={{ backgroundColor: '#fcb', width: 100, height: 100 }}>
-        <Text>{this.state.showIndex}</Text>
-      </View>
-      <View>
-        <HorizontalItem items={this.state.meetMainData}
-          handleSelect={this.handleSelect.bind(this)}
-          type={this.renderMeetItem} />
-      </View>
+      {showIndex === 0 ? <HorizontalItem items={meetMainData}
+        handleSelect={this.handleSelect.bind(this)}
+        type={this.renderMeetItem} /> : null}
     </View>
   }
 
   handleSelect(path: string): void {
-    Alert.alert(path);
+    //Alert.alert(path);
+    this.props.navigation.navigate('MeetDetail')
   }
 
-  public renderMeetItem = (data: any) =>
+  public renderMeetItem = (data: MeetItem) =>
     <View style={{ flex: 0, width: 750, justifyContent: 'flex-start', flexDirection: 'row' }}>
-      <Clock time="10:30" />
+      <Clock time={data.time.substring(0, 5)} />
       <View>
         <Text>{data.name}</Text>
         <View>
           <Text>{data.time}</Text>
-        <Text>{data.position}</Text>
+          <Text>{data.position}</Text>
+        </View>
       </View>
-    </View>
     </View>;
 }

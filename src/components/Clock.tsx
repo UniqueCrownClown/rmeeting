@@ -26,8 +26,8 @@ const styles = StyleSheet.create({
     left: 30,
   },
   hourInner: {
-    marginTop: 10,
-    height: 25,
+    marginTop: 15,
+    height: 20,
     backgroundColor: '#fff',
   },
   minInner: {

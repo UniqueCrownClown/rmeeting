@@ -13,6 +13,10 @@ import MeetPerson from '../view/meet/MeetPerson';
 import PrintFile from '../view/print/PrintFile';
 import FileSelect from '../view/print/FileSelect';
 import PrintDetail from '../view/print/PrintDetail';
+import DeskSelect from '../view/desk/DeskSelect';
+import AddDesk from '../view/desk/AddDesk';
+import DeskMain from '../view/desk/DeskMain';
+import MeetDetail from '../view/meet/MeetDetail';
 const RootStack = createStackNavigator(
   {
     Toe: { screen: Toe },
@@ -22,16 +26,20 @@ const RootStack = createStackNavigator(
     SignUp: { screen: SignUp },
     SignOn: { screen: SignOn },
     MeetMain: { screen: MeetMain },
+    MeetDetail: { screen: MeetDetail },
     AddMeet: { screen: AddMeet },
     MeetTime: { screen: MeetTime },
     MeetPerson: { screen: MeetPerson },
     PrintMain: { screen: PrintMain },
     PrintFile: { screen: PrintFile },
     FileSelect: { screen: FileSelect },
-    PrintDetail:{screen: PrintDetail}
+    PrintDetail: { screen: PrintDetail },
+    DeskMain: { screen: DeskMain },
+    AddDesk: { screen: AddDesk },
+    DeskSelect: { screen: DeskSelect }
   },
   {
-    initialRouteName: 'PrintFile',
+    initialRouteName: 'MeetMain',
     defaultNavigationOptions: {
       headerStyle: {
         backgroundColor: '#137BFE',

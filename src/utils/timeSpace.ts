@@ -1,4 +1,5 @@
 import Lunar from './lunar';
+import { number } from 'prop-types';
 export const timeSpace = () => {
   let arr: string[] = new Array();
   const min = ['00', '30'];
@@ -10,17 +11,25 @@ export const timeSpace = () => {
 export const timeState = (haha: Array<string>): Array<ItimeState> => {
   let returnArr = [];
   haha.map((item) => {
-    returnArr.push({ text: item, isSelect: false, isActive: false })
+    returnArr.push({ text: item, isAble: true, isActive: false })
   })
   return returnArr
 }
 // 用update的值更新mIndex位置的haha
-export const getUpdate = (haha: Array<any>, mIndex: number, update: any) => {
+export const getUpdate = (haha: Array<any>, mIndex: number, update: any, startIndex?: number) => {
   const xxx = haha.map((item, index) => {
-    if (index === mIndex) {
-      const temp = Object.assign({}, item, update);
-      return temp
+    if (startIndex === undefined || startIndex < 0) {
+      if (index === mIndex) {
+        const temp = Object.assign({}, item, update);
+        return temp
+      }
+    } else {
+      if (index <= mIndex && index >= startIndex) {
+        const temp = Object.assign({}, item, update);
+        return temp
+      }
     }
+
     return item
   })
   return xxx
@@ -32,7 +41,7 @@ export const allUpdate = (haha: Array<any>, update: any) => {
   })
   return xxx
 }
-//日历获取算法
+
 //获取当前周的第一天
 export const getFirstDay = () => {
   let date = new Date();
@@ -66,7 +75,7 @@ export const getRenderCalendar = (date: Date): IDateItem => {
 }
 export const getWeekCalendar = () => {
   let returnDates = new Array<IDateItem>();
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 14; i++) {
     returnDates.push(getRenderCalendar(addDate(getFirstDay(), i)));
   }
   return returnDates;

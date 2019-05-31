@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { element, any } from "prop-types";
 import { getUpdate } from "../../utils/timeSpace";
 import SelectItem, { ISelectItem } from "../../components/SelectItem";
+import XButton from "../../components/XButton";
 
 declare interface MeetPersonProps {
   navigation: any
@@ -31,20 +32,27 @@ export default class MeetPerson extends Component<MeetPersonProps, MeetPersonSta
     }
   }
   static navigationOptions = ({ navigation }) => {
+    const rendText = `确定(${navigation.getParam('count')})`;
     return {
       headerTitle: '参会人员',
-      headerRight: (
-        <View style={styles.countView}>
-          <Text style={styles.countViewText}>确定</Text>
-          <Text style={styles.countViewText}>({navigation.getParam('count')})</Text>
-        </View>
-      ),
+      headerRight: (<XButton
+        onClick={navigation.getParam('complateBook', () => { Alert.alert('ddaad') })}
+        text={rendText}
+      />),
     }
   };
   componentDidMount() {
     const linkMan = ['张三', '李四', '王五', '赵六', '林七', '菜八'];
     this.setState({ selectList: this.filterGroup(linkMan) });
-    this.props.navigation.setParams({ count: 0 });
+    this.props.navigation.setParams({ count: 0, complateBook: this._complateBook.bind(this) });
+  }
+  _complateBook() {
+    const { selectList } = this.state;
+    const persons = selectList.filter(element => element.isSelect === true);
+    const sha = persons.map(item => item.name).join(',');
+    this.props.navigation.navigate('AddMeet', {
+      persons: sha
+    })
   }
   public render() {
     const { selectList } = this.state;

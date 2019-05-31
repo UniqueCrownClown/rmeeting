@@ -1,6 +1,6 @@
 declare interface ItimeState {
   text: string,
-  isSelect: boolean,
+  isAble: boolean,
   isActive: boolean
 }
 interface IDateItem {

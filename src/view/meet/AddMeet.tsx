@@ -43,6 +43,8 @@ export default class AddMeet extends Component<AddMeetProps, AddMeetState> {
   }
 
   render() {
+    const persons = this.props.navigation.getParam('persons', '请选择');
+    const meetTime = this.props.navigation.getParam('meetTime', '请选择');
     return (
       <View style={styles.addMeetContainer}>
         <View style={[styles.meetSubject, styles.publicCell]}>
@@ -55,11 +57,11 @@ export default class AddMeet extends Component<AddMeetProps, AddMeetState> {
         </TouchableOpacity>
         <TouchableOpacity style={styles.publicCell} onPress={this.navigateTo.bind(this, 'MeetTime')}>
           <Text style={styles.publicText}>参会时间</Text>
-          <Text style={styles.publicText}>{this.state.meetTime}</Text>
+          <Text style={styles.publicText}>{meetTime}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.publicCell} onPress={this.navigateTo.bind(this, 'MeetPerson')}>
           <Text style={styles.publicText}>参会人员</Text>
-          <Text style={styles.publicText}>{this.state.meetPerson}</Text>
+          <Text style={styles.publicText}>{persons}</Text>
         </TouchableOpacity>
         <Modal
           isVisible={this.state.visibleModal}
@@ -70,7 +72,7 @@ export default class AddMeet extends Component<AddMeetProps, AddMeetState> {
     )
   }
   renderModalContent() {
-    const selectItem = ['会议室1', '会议室2', '会议室3', '会议室4'];
+    const selectItem = ['会议室1', '会议室2', '会议室3'];
     return <View style={styles.modalContent}>
       {
         selectItem.map((item, index) =>
@@ -113,7 +115,7 @@ const styles = StyleSheet.create({
   sInput: {
     width: 240,
     fontSize: 18,
-    textAlign:'right'
+    textAlign: 'right'
   },
   meetSubject: {
 

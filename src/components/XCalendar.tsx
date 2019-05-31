@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Calendar } from 'react-native-calendars';
+import { StyleSheet } from "react-native";
+import { CalendarList } from 'react-native-calendars';
 
-declare interface MainProps {
-  navigation: any
+declare interface XCalendarProps {
+  markedDates: any,
+  onDayPress: (day: any) => void
 }
-declare interface MainState {
-  count: number
+declare interface XCalendarState {
+  markedDates: any,
 }
 
 const styles = StyleSheet.create({
@@ -29,25 +30,29 @@ const styles = StyleSheet.create({
   }
 });
 
-export default class XCalendar extends Component<MainProps, MainState> {
+export default class XCalendar extends Component<XCalendarProps, XCalendarState> {
+  constructor(props: XCalendarProps) {
+    super(props);
+    this.state = {
+      markedDates: {
+      }
+    }
+  }
   public render() {
-    return <View>
-      <Text style={styles.text}>Calendar with marked dates and hidden arrows</Text>
-      <Calendar
-        style={styles.calendar}
-        current={'2012-05-16'}
-        minDate={'2012-05-10'}
-        maxDate={'2012-05-29'}
-        firstDay={1}
-        markedDates={{
-          '2012-05-23': { selected: true, marked: true },
-          '2012-05-24': { selected: true, marked: true, dotColor: 'green' },
-          '2012-05-25': { marked: true, dotColor: 'red' },
-          '2012-05-26': { marked: true },
-          '2012-05-27': { disabled: true, activeOpacity: 0 }
-        }}
-        hideArrows={true}
-      />
-    </View>
+    const { markedDates, onDayPress } = this.props;
+    return <CalendarList
+      // Callback which gets executed when visible months change in scroll view. Default = undefined
+      // onVisibleMonthsChange={(months) => { console.log('now these months are visible', months); }}
+      // Max amount of months allowed to scroll to the past. Default = 50
+      pastScrollRange={0}
+      // Max amount of months allowed to scroll to the future. Default = 50
+      futureScrollRange={3}
+      // Enable or disable scrolling of calendar list
+      scrollEnabled={true}
+      // Enable or disable vertical scroll indicator. Default = false
+      showScrollIndicator={true}
+      markedDates={markedDates}
+      onDayPress={onDayPress}
+    />
   }
 }
