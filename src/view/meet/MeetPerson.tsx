@@ -4,6 +4,7 @@ import { element, any } from "prop-types";
 import { getUpdate } from "../../utils/timeSpace";
 import SelectItem, { ISelectItem } from "../../components/SelectItem";
 import XButton from "../../components/XButton";
+import { getLinkMan } from "../../api";
 
 declare interface MeetPersonProps {
   navigation: any
@@ -42,9 +43,16 @@ export default class MeetPerson extends Component<MeetPersonProps, MeetPersonSta
     }
   };
   componentDidMount() {
-    const linkMan = ['张三', '李四', '王五', '赵六', '林七', '菜八'];
-    this.setState({ selectList: this.filterGroup(linkMan) });
+    this.queryData();
     this.props.navigation.setParams({ count: 0, complateBook: this._complateBook.bind(this) });
+  }
+  async queryData() {
+    //const linkMan = ['张三', '李四', '王五', '赵六', '林七', '菜八'];
+    const { data, status } = await getLinkMan('all');
+    if (status === 200) {
+      this.setState({ selectList: this.filterGroup(data) });
+    }
+
   }
   _complateBook() {
     const { selectList } = this.state;

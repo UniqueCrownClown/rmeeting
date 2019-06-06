@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 })
 
 export default connect(
-  (state) => ({
+  (state: any) => ({
     count: state.counter.count,
   }),
   (dispatch) => ({

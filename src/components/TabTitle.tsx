@@ -59,7 +59,8 @@ const styles = StyleSheet.create({
     borderColor: '#fff'
   },
   ItemBlockText: {
-    color: '#fff'
+    color: '#fff',
+    fontSize: 20
   }
 
 })

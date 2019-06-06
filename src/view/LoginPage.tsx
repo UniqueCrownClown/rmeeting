@@ -3,6 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
+  Alert,
   TouchableOpacity,
 } from 'react-native';
 
@@ -15,8 +16,10 @@ const resetAction = StackActions.reset({
     NavigationActions.navigate({ routeName: 'Main' })
   ]
 })
-
-class LoginPage extends Component {
+declare interface LoginPageProps {
+  loginWrap: (a: LoginParams) => void
+}
+class LoginPage extends Component<LoginPageProps> {
   static navigationOptions = {
     title: 'LoginPage',
   };
@@ -24,7 +27,7 @@ class LoginPage extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     // 登录完成,切成功登录
-    if (nextProps.status === '登陆成功' && nextProps.isSuccess) {
+    if (nextProps.status === '登录成功' && nextProps.isSuccess) {
       this.props.navigation.dispatch(resetAction)
       return false;
     }
@@ -32,12 +35,12 @@ class LoginPage extends Component {
   }
 
   render() {
-    const { login } = this.props;
+    const { loginWrap } = this.props;
     return (
       <View style={styles.container}>
         <Text>状态: {this.props.status}
         </Text>
-        <TouchableOpacity onpress={() => login()} style={{ marginTop: 50 }}>
+        <TouchableOpacity onPress={() => loginWrap({ staffNum: 'A4407', password: '123456' })}>
           <View style={styles.loginBtn}>
             <Text>登录
             </Text>
@@ -62,12 +65,12 @@ const styles = StyleSheet.create({
 });
 
 export default connect(
-  (state) => ({
+  (state: any) => ({
     status: state.loginIn.status,
     isSuccess: state.loginIn.isSuccess,
     user: state.loginIn.user,
   }),
   (dispatch) => ({
-    login: () => dispatch(loginAction.login()),
+    loginWrap: (loginParams: LoginParams) => dispatch(loginAction.loginWrap(loginParams)),
   })
 )(LoginPage)

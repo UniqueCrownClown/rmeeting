@@ -5184,6 +5184,11 @@ react-native-animatable@^1.2.4:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-ble-manager@^6.6.4:
+  version "6.6.4"
+  resolved "https://registry.npm.taobao.org/react-native-ble-manager/download/react-native-ble-manager-6.6.4.tgz#38862c65edfab8f839cfae0f34e3b3a637c577d3"
+  integrity sha1-OIYsZe36uPg5z64PNOOzpjfFd9M=
+
 react-native-calendars@^1.101.0:
   version "1.101.0"
   resolved "https://registry.npm.taobao.org/react-native-calendars/download/react-native-calendars-1.101.0.tgz#6a93a48f63bdcf1be33457090b1c102b77b9d26d"
@@ -5194,10 +5199,10 @@ react-native-calendars@^1.101.0:
     prop-types "^15.5.10"
     xdate "^0.8.0"
 
-react-native-camera@^2.2.2:
-  version "2.6.0"
-  resolved "https://registry.npm.taobao.org/react-native-camera/download/react-native-camera-2.6.0.tgz#bf97b0fc68aa8732d815e9bbd92e63529f51d598"
-  integrity sha1-v5ew/GiqhzLYFem72S5jUp9R1Zg=
+react-native-camera@2.2.2:
+  version "2.2.2"
+  resolved "https://registry.npm.taobao.org/react-native-camera/download/react-native-camera-2.2.2.tgz#2636e3ec681aef5a786ae7856820ee64e59fa060"
+  integrity sha1-Jjbj7Gga71p4aueFaCDuZOWfoGA=
   dependencies:
     prop-types "^15.6.2"
 
@@ -5486,6 +5491,11 @@ realpath-native@^1.1.0:
   integrity sha1-IAMpT+oj+wZy8kduviL89Jii1lw=
   dependencies:
     util.promisify "^1.0.0"
+
+redux-devtools-extension@^2.13.8:
+  version "2.13.8"
+  resolved "https://registry.npm.taobao.org/redux-devtools-extension/download/redux-devtools-extension-2.13.8.tgz#37b982688626e5e4993ff87220c9bbb7cd2d96e1"
+  integrity sha1-N7mCaIYm5eSZP/hyIMm7t80tluE=
 
 redux-thunk@^2.3.0:
   version "2.3.0"

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Text, TextInput, Button, View, Alert, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
-// import Myicon from 'react-native-vector-icons/iconfont';
-import baseConfig from './../../config'
-import { styles } from './Styles'
+import { Alert, Button, KeyboardAvoidingView, TextInput, View } from 'react-native';
+import { NavigationScreenProp } from 'react-navigation';
+import { register } from '../../api';
+import { styles } from './Styles';
 interface SignOnProps {
-
+  navigation: NavigationScreenProp<any>
 }
 interface SignOnState {
   usercard: string; username: string; password: string; againPassword: string;
@@ -52,13 +52,28 @@ export default class SignOn extends Component<SignOnProps, SignOnState> {
             value={this.state.againPassword} />
         </View>
         <View style={styles.buttonContainer}>
-          <Button title='注册' onPress={this.register.bind(this)}></Button>
+          <Button title='注册' onPress={this.registerPress.bind(this)}></Button>
         </View>
       </KeyboardAvoidingView>
     </View>
   }
 
-  public register() {
+  public async registerPress() {
+    const a = {
+      staffNum: this.state.usercard,
+      password: this.state.password,
+      username: this.state.username
+    }
+    const responseValue = await register(a);
+    const { status, data } = responseValue;
+    if (status === 200 && data.status === 'success') {
+      this.toLogin();
+    } else {
+      Alert.alert('注册失败');
+    }
+  }
 
+  public toLogin() {
+    this.props.navigation.goBack();
   }
 }

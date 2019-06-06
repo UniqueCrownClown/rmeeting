@@ -10,8 +10,9 @@
     "axios": "^0.18.0",
     "react": "16.8.3",
     "react-native": "0.59.5",
+    "react-native-ble-manager": "^6.6.4",
     "react-native-calendars": "^1.101.0",
-    "react-native-camera": "^2.2.2",
+    "react-native-camera": "2.2.2",
     "react-native-fs": "^2.13.3",
     "react-native-gesture-handler": "^1.1.0",
     "react-native-modal": "^9.0.0",
@@ -22,6 +23,7 @@
     "react-navigation": "^3.6.0",
     "react-redux": "^6.0.1",
     "redux": "^4.0.1",
+    "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0"
   },
   "devDependencies": {

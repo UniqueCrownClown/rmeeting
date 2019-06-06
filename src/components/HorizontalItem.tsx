@@ -1,23 +1,24 @@
 import React, { Component } from 'react';
-import { FlatList, TouchableOpacity, StyleSheet, Alert, View, Text } from "react-native";
+import { Alert, FlatList, SectionList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Swipeout from "react-native-swipeout";
-import { FileItem } from "./FileList";
 export declare interface BasicItem {
-  name: string, path: string
+  name: string,
+  path: string
+}
+export declare interface GroupBasicItem {
+  title: string,
+  data: Array<BasicItem>
 }
 
-export declare interface MeetItem extends BasicItem {
-  timespace: string,
-  location: string,
-  time: string
-}
 declare interface HorizontalItemProps {
-  items: Array<BasicItem>,
+  items?: Array<BasicItem>,
+  sessions?: Array<GroupBasicItem>,
   disableSwiper?: boolean,
   handleSelect: (name: string) => void,
   swiperPress?: (name: string) => void,
-  type?: (data: any) => any
-  dropFresh?: () => void
+  type?: (data: any) => any,
+  dropFresh?: () => void,
+  isGroup?: boolean
 }
 declare interface HorizontalItemState {
   rowIndex: number
@@ -49,7 +50,7 @@ export default class HorizontalItem extends Component<HorizontalItemProps, Horiz
       disabled={this.props.disableSwiper}
       backgroundColor='#ffffff'>
       <TouchableOpacity
-        key={item.name}
+        key={item.path}
         onPress={() => this.props.handleSelect(item.path)}
         style={styles.fileListItem}>
         {this.props.type ? this.props.type(item) : this.renderBasic(item.name)}
@@ -60,18 +61,30 @@ export default class HorizontalItem extends Component<HorizontalItemProps, Horiz
   </View>;
 
   public render() {
-    const { items, dropFresh } = this.props;
-    const _keyExtractor = (item: FileItem, index: number) => item.name;
+    const { items, dropFresh, isGroup, sessions } = this.props;
+    const _keyExtractor = (item: BasicItem) => item.name;
+    if (!isGroup) {
+      return (
+        <FlatList
+          data={items}
+          extraData={this.state.rowIndex}
+          keyExtractor={_keyExtractor}
+          renderItem={({ item, index }) => this.renderItem(item, index)}
+          refreshing={false}
+          onRefresh={dropFresh}
+        />)
+    }
     return (
-      <FlatList
-        data={items}
+      <SectionList
         extraData={this.state.rowIndex}
-        keyExtractor={_keyExtractor}
         renderItem={({ item, index }) => this.renderItem(item, index)}
-        refreshing={false}
-        onRefresh={dropFresh}
+        renderSectionHeader={({ section: { title } }) => (
+          <Text style={{ fontWeight: "bold", fontSize: 18, padding: 10 }}>{title}</Text>
+        )}
+        sections={sessions}
+        keyExtractor={_keyExtractor}
       />
-    );
+    )
   }
 
   onSwipeOpen(rowIndex) {

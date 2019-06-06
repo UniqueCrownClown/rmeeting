@@ -1,9 +1,7 @@
 declare module global {
-  let http: xcxdx;
+  let http: AllHttp;
 }
-declare class xcxdx {
+declare class AllHttp {
   register: (params: any) => any
   logon: (params: any) => any
-  fetchData: () => Promise<any>
-  getTest:()=>any
 }

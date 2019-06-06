@@ -1,5 +1,4 @@
 import Lunar from './lunar';
-import { number } from 'prop-types';
 export const timeSpace = () => {
   let arr: string[] = new Array();
   const min = ['00', '30'];

@@ -17,6 +17,8 @@ import DeskSelect from '../view/desk/DeskSelect';
 import AddDesk from '../view/desk/AddDesk';
 import DeskMain from '../view/desk/DeskMain';
 import MeetDetail from '../view/meet/MeetDetail';
+import DeskScan from '../view/desk/DeskScan';
+import TestBle from '../view/toe/TestBle';
 const RootStack = createStackNavigator(
   {
     Toe: { screen: Toe },
@@ -36,10 +38,12 @@ const RootStack = createStackNavigator(
     PrintDetail: { screen: PrintDetail },
     DeskMain: { screen: DeskMain },
     AddDesk: { screen: AddDesk },
-    DeskSelect: { screen: DeskSelect }
+    DeskSelect: { screen: DeskSelect },
+    DeskScan: { screen: DeskScan },
+    TestBle: { screen: TestBle }
   },
   {
-    initialRouteName: 'MeetMain',
+    initialRouteName: 'PrintMain',
     defaultNavigationOptions: {
       headerStyle: {
         backgroundColor: '#137BFE',

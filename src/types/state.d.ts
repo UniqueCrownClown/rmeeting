@@ -1,6 +1,6 @@
 interface IUser {
-  name: string
-  age: number
+  staffNum: string
+  userName: string
 }
 interface INormalAction {
   type: string
@@ -9,4 +9,10 @@ interface INormalAction {
 interface IUserAction {
   type: string
   user: IUser
+}
+
+interface UserState {
+  status: string,
+  isSuccess: boolean,
+  user: null | IUser,
 }

@@ -1,17 +1,18 @@
 import React, { Component } from "react";
-import { Alert, findNodeHandle, GestureResponderEvent, PanResponder, ScrollView, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, UIManager, View } from "react-native";
+import { Alert, findNodeHandle, GestureResponderEvent, PanResponder, Picker, ScrollView, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, UIManager, View } from "react-native";
 import { NavigationScreenProp } from 'react-navigation';
+import { getBookTimeSpace } from "../../api";
 import XButton from "../../components/XButton";
-import config from "../../config";
 import { compose } from "../../utils/compose";
 import { allUpdate, getUpdate, getWeekCalendar, timeSpace, timeState } from "../../utils/timeSpace";
-import { element } from "prop-types";
+import { themeColor } from "../../config";
 declare interface MeetTimeProps {
   navigation: NavigationScreenProp<any>
 }
 declare interface MeetTimeState {
   timeData: Array<ItimeState>,
-  calendarData: Array<IDateItem>
+  calendarData: Array<IDateItem>,
+  language: string
 }
 const styles = StyleSheet.create({
   meetTimeMain: {
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
   calendarItemActive: {
     flex: 0,
     width: 50,
-    backgroundColor: config.themeColor,
+    backgroundColor: themeColor,
     borderRadius: 50
   },
   calenadarItemText: {
@@ -100,11 +101,20 @@ export default class MeetTime extends Component<MeetTimeProps, MeetTimeState> {
     this.state = {
       timeData: compose(timeState, timeSpace)(),
       calendarData: getWeekCalendar(),
+      language: 'java'
     }
   }
   static navigationOptions = ({ navigation }) => {
     return {
-      headerTitle: '预约时间',
+      headerTitle: <Picker
+        selectedValue={navigation.getParam('roomValue', '0')}
+        style={{ height: 50, width: 200, color: '#ffffff' }}
+        onValueChange={(itemValue, itemIndex) =>
+          navigation.getParam('roomValuePick', () => { Alert.alert('ddaad') })(itemValue)}>
+        <Picker.Item label="会议室1" value="1" />
+        <Picker.Item label="会议室2" value="2" />
+        <Picker.Item label="会议室3" value="3" />
+      </Picker>,
       headerRight: (<XButton
         onClick={navigation.getParam('complateBook', () => { Alert.alert('ddaad') })}
         text='确定'
@@ -113,7 +123,12 @@ export default class MeetTime extends Component<MeetTimeProps, MeetTimeState> {
   };
 
   componentDidMount() {
-    this.props.navigation.setParams({ count: 0, complateBook: this._complateBook.bind(this) });
+    this.props.navigation.setParams({
+      count: 0,
+      complateBook: this._complateBook.bind(this),
+      roomValue: '1',
+      roomValuePick: this._roomValuePick.bind(this)
+    });
     setTimeout(() => {
       this.getLayout();
     }, 1000);
@@ -143,10 +158,14 @@ export default class MeetTime extends Component<MeetTimeProps, MeetTimeState> {
     }
     const bookDate = calendarData.find(element => element.isActive);
     const bookDateStr = `${bookDate.year}-${bookDate.month}-${bookDate.day}`
-    const sha = `${haha[0].text}-${haha[haha.length - 1].text}(${bookDateStr})`
     this.props.navigation.navigate('AddMeet', {
-      meetTime: sha
+      meetTime: `${haha[0].text}-${haha[haha.length - 1].text}`,
+      meetDate: `${bookDateStr}`
     })
+  }
+  _roomValuePick(itemValue: string) {
+    //this.setState({ language: itemValue });
+    this.props.navigation.setParams({ roomValue: itemValue })
   }
   layout(ref: any) {
     const handle = findNodeHandle(ref);
@@ -267,12 +286,15 @@ export default class MeetTime extends Component<MeetTimeProps, MeetTimeState> {
     const yyy = getUpdate(timeData, count, { isActive: true }, activeIndex);
     this.setState({ timeData: yyy });
   }
-  selectDate(count: number) {
-    const xxx = allUpdate(this.state.calendarData, { isActive: false });
+  async selectDate(count: number) {
+    const { calendarData, timeData } = this.state;
+    const xxx = allUpdate(calendarData, { isActive: false });
     const yyy = getUpdate(xxx, count, { isActive: true });
     this.setState({ calendarData: yyy });
     //查询timeData的状态
-    const zzz = getUpdate(this.state.timeData, 5, { isAble: false });
+    const { year, month, day } = calendarData[count];
+    const response = await getBookTimeSpace(`${year}-${month}-${day}`, '0');
+    const zzz = getUpdate(timeData, 5, { isAble: false });
     this.setState({ timeData: zzz });
   }
 }

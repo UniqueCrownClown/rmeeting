@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet, View, Text, Button, Alert, TouchableOpacity, TextInput, Image
-} from 'react-native';
-import Modal from "react-native-modal";
-import XButton from '../../components/XButton';
-import { NavigationScreenProp } from 'react-navigation';
-import HorizontalItem, { BasicItem } from '../../components/HorizontalItem';
-import Demo from '../../container/Demo';
+import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { NavigationScreenProp } from 'react-navigation';
+import Dialog from '../../components/Dialog';
+import HorizontalItem, { BasicItem } from '../../components/HorizontalItem';
+import XButton from '../../components/XButton';
 export declare interface PrintItem extends BasicItem {
   count: number,
   time?: string
@@ -43,29 +40,9 @@ export default class PrintMain extends Component<PrintMainProps, PrintMainState>
   componentDidMount() {
     this.props.navigation.setParams({ showModal: this.showModal })
   }
-  showModal = () => {
-    this.setState({ visibleModal: true });
+  showModal = (isShow: boolean = true) => {
+    this.setState({ visibleModal: isShow });
   }
-  renderButton = (text, onPress: () => void) => (
-    <TouchableOpacity onPress={onPress}>
-      <View style={styles.button}>
-        <Text>{text}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  renderModalContent = () => (
-    <View style={styles.modalContent}>
-      <View><Text>新建场景</Text></View>
-      <View>
-        <TextInput placeholder="场景值"></TextInput>
-      </View>
-      <View style={{ flex: 0, justifyContent: 'space-around' }}>
-        {this.renderButton("新建", () => this.setState({ visibleModal: false }))}
-        {this.renderButton("取消", () => this.setState({ visibleModal: false }))}
-      </View>
-    </View>
-  );
 
   public render() {
     return <View style={styles.container}>
@@ -74,13 +51,18 @@ export default class PrintMain extends Component<PrintMainProps, PrintMainState>
           handleSelect={this.handleSelect.bind(this)}
           type={this.renderPrintMain} />
       </View>
-      <Modal
-        isVisible={this.state.visibleModal}
-        animationIn="slideInLeft"
-        animationOut="slideOutRight">
-        {this.renderModalContent()}
-      </Modal>
+      <Dialog
+        title='新建场景'
+        isInput={true}
+        visibleModal={this.state.visibleModal}
+        success={(text) => this.handleCreate(text)}
+        cancel={() => this.showModal(false)}
+      />
     </View>
+  }
+  handleCreate(text: string): void {
+    this.showModal(false);
+    Alert.alert(text);
   }
 
   handleSelect(path: string): void {
@@ -89,14 +71,18 @@ export default class PrintMain extends Component<PrintMainProps, PrintMainState>
   }
 
   public renderPrintMain = (data: PrintItem) =>
-    <View style={{ flex: 0, width: 750, justifyContent: 'flex-start', flexDirection: 'row' }}>
-      <Image style={{ width: 50, height: 50 }}
-        source={require('./../../asserts/images/list-folder.png')} />
-      <View>
+    <View style={{ flex: 0, width: 750, paddingVertical: 10, justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'row' }}>
+      <View style={{ paddingHorizontal: 20 }}>
+        <Image style={{ width: 50, height: 50 }}
+          source={require('./../../asserts/images/list-folder.png')} />
+      </View>
+      <View style={{ flex: 1 }}>
         <Text>{data.name}</Text>
         <Text>文件信息</Text>
       </View>
-      <Icon name="angle-right" size={20} color="#666" />
+      <View style={{ paddingHorizontal: 20 }}>
+        <Icon name="angle-right" size={20} color="#666" />
+      </View>
     </View>;
 }
 const styles = StyleSheet.create({

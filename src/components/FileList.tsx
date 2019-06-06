@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, Button, Alert, FlatList, TouchableOpacity } from 'react-native';
-import { element } from 'prop-types';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 const styles = StyleSheet.create({
   fileListContainer: {

@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
-import { Text, TextInput, Button, View, Alert, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
+import { Alert, Button, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 // import Myicon from 'react-native-vector-icons/iconfont';
-import baseConfig from './../../config'
-import { styles } from './Styles'
+import baseConfig, { themeColor } from './../../config';
+import { styles } from './Styles';
+import { connect } from 'react-redux';
+import { loginWrap } from '../../store/actions/loginAction';
 declare interface SignUpProps {
-  navigation: any
+  navigation: any,
+  loginWrap: (loginParams: LoginParams) => void
 }
 declare interface SignUpState {
   account: string;
   password: string;
 }
 
-export default class SignUp extends Component<SignUpProps, SignUpState> {
+class SignUp extends Component<SignUpProps, SignUpState> {
   static navigationOptions = {
     header: null
   };
@@ -45,7 +48,7 @@ export default class SignUp extends Component<SignUpProps, SignUpState> {
             value={this.state.password} />
         </View>
         <View style={styles.buttonContainer}>
-          <Button title='登录' onPress={this.login.bind(this)}></Button>
+          <Button title='登录' onPress={this.loginPress.bind(this)}></Button>
         </View>
         <View style={styles.buttonContainer}>
           <Button title='首页' onPress={this.toMain.bind(this)}></Button>
@@ -55,26 +58,41 @@ export default class SignUp extends Component<SignUpProps, SignUpState> {
             <Text>还没有账号?</Text>
           </View>
           <TouchableOpacity onPress={this.toRegister.bind(this)}>
-            <Text style={{ color: baseConfig.themeColor }}>立即注册</Text>
+            <Text style={{ color: themeColor }}>立即注册</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </View>
   }
-  private async login() {
-    let a = {
-      usercard: this.state.account,
+  private loginPress() {
+    const a = {
+      staffNum: this.state.account,
       password: this.state.password
     }
-    let responseValue = await global.http.logon(a);
-    console.info(responseValue)
-    const { status } = responseValue;
-    Alert.alert(status.toString());
+    this.props.loginWrap(a);
+    // const responseValue = await login(a);
+    // const { status, data } = responseValue;
+    // if (status === 200 && data.status === 'success') {
+    //   this.toMain();
+    // } else {
+    //   Alert.alert('登录失败');
+    // }
   }
-  private toMain(){
+  private toMain() {
     this.props.navigation.navigate('Home')
   }
   private toRegister() {
     this.props.navigation.navigate('SignOn')
   }
 }
+
+export default connect(
+  (state: any) => ({
+    status: state.loginIn.status,
+    isSuccess: state.loginIn.isSuccess,
+    user: state.loginIn.user,
+  }),
+  (dispatch) => ({
+    loginWrap: (loginParams: LoginParams) => dispatch(loginWrap(loginParams)),
+  })
+)(SignUp)

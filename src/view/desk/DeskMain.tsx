@@ -3,20 +3,26 @@ import { View, StyleSheet, Image, Alert, Text, TouchableOpacity, } from "react-n
 import TabTitle, { TabTitleItem } from "../../components/TabTitle";
 import HorizontalItem, { BasicItem } from "../../components/HorizontalItem";
 import { NavigationScreenProp } from "react-navigation";
+import { getDeskList, releaseDesk } from "../../api";
+import { connect } from "react-redux";
+import Dialog from "../../components/Dialog";
 declare interface DeskDataItem extends BasicItem {
   state: number,
   timeSpace: string
 }
 declare interface DeskMainProps {
-  navigation: NavigationScreenProp<any>
+  navigation: NavigationScreenProp<any>,
+  user: IUser
 }
 declare interface DeskMainState {
   showIndex: number,
-  deskData: Array<DeskDataItem>
+  deskData: Array<DeskDataItem>,
+  visibleModal: boolean
 }
 const styles = StyleSheet.create({
   DeskMainContainer: {
     flex: 1,
+    alignItems: 'center'
   },
   mapImageWrap: {
     flex: 0,
@@ -42,28 +48,45 @@ const styles = StyleSheet.create({
     backgroundColor: 'skyblue',
   },
   deskItemContainer: {
+    width: 320,
     height: 200,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#f5f5f5'
+    borderColor: '#cccccc',
   },
   addDeskContainer: {
     height: 200,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#f5f5f5',
+    borderColor: '#cccccc',
     flex: 0,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    width: 320
   }
 
 })
-export default class DeskMain extends Component<DeskMainProps, DeskMainState> {
+class DeskMain extends Component<DeskMainProps, DeskMainState> {
+  currentDeleteId: string = '';
+  async queryDelete() {
+    if (this.currentDeleteId != '') {
+      const { data, status } = await releaseDesk(this.currentDeleteId);
+      if (status === 200) {
+        this.currentDeleteId = '';
+        this.queryData();
+      }
+    }
+
+
+  }
+  private stateText = ['未使用', '使用中'];
+  private stateExchangeText = ['开始使用', '提前释放'];
   constructor(props: DeskMainProps) {
     super(props);
     this.state = {
+      visibleModal: false,
       showIndex: 1,
-      deskData: [{ name: '123', path: 'dsda', state: 0, timeSpace: 'dadadad' }]
+      deskData: [{ name: '2', path: 'dsda', state: 0, timeSpace: '2019.05.30-2019.05.32' }]
     }
   }
   static navigationOptions = ({ navigation }) => {
@@ -82,16 +105,35 @@ export default class DeskMain extends Component<DeskMainProps, DeskMainState> {
   };
   componentDidMount() {
     this.props.navigation.setParams({
+      activeIndex: this.state.showIndex,
       exchangeIndex0: () => this._exchangeIndex(0),
       exchangeIndex1: () => this._exchangeIndex(1),
     });
+    this.queryData();
+  }
+  async queryData() {
+    const { status, data } = await getDeskList(this.props.user.staffNum);
+    if (status === 200) {
+      console.log(data);
+      const deskData = data.map(item => {
+        return {
+          name: item.stationNum,
+          path: item.qrToken,
+          state: item.status,
+          timeSpace: `${item.startDate}-${item.endDate}`
+        }
+      })
+      this.setState({
+        deskData: deskData
+      });
+    }
   }
   _exchangeIndex = (index: number) => {
     this.setState({ showIndex: index })
     this.props.navigation.setParams({ activeIndex: index })
   }
   public render() {
-    const { deskData } = this.state
+    const { deskData } = this.state;
     return <View style={styles.DeskMainContainer}>
       {this.state.showIndex === 0 ? DeskMain.renderRoomMap(require('./../../asserts/images/desk-map-color.png')) : this.renderDeskList(deskData)}
     </View>
@@ -110,7 +152,7 @@ export default class DeskMain extends Component<DeskMainProps, DeskMainState> {
     <View style={styles.navigateInnerCircle}></View>
   </View>
   public renderDeskList = (deskData: Array<any>) => {
-    return <View>
+    return <View style={{ flex: 0, alignItems: 'center', width: 320 }}>
       <HorizontalItem
         items={deskData}
         handleSelect={this.handleSelect.bind(this)}
@@ -121,35 +163,51 @@ export default class DeskMain extends Component<DeskMainProps, DeskMainState> {
         onPress={() => this.navigateToAdd()}>
         <Text style={{ fontSize: 30 }}>工位预约</Text>
       </TouchableOpacity>
+      <Dialog
+        visibleModal={this.state.visibleModal}
+        success={() => this.queryDelete()}
+        cancel={() => this.setState({ visibleModal: false })}
+      />
     </View>
   }
   public renderDeskItem = (item: DeskDataItem) => {
     return <View style={styles.deskItemContainer}>
-      <View>
-        <Text>{item.name}</Text>
-        <Text>{item.timeSpace}</Text>
-        <Text>{item.state}</Text>
+      <View style={{ backgroundColor: '#5060fe', flex: 1, padding: 10 }}>
+        <Text style={{ fontWeight: '700', fontSize: 18, color: '#ffffff' }}>{`${item.name}号工位`}</Text>
+        <Text style={{ paddingHorizontal: 10, paddingVertical: 4, color: '#ffffff' }}>{item.timeSpace}</Text>
+        <Text style={{ paddingHorizontal: 10, paddingVertical: 4, color: '#ffffff' }}>{this.stateText[item.state]}</Text>
       </View>
-      <View>
+      <View style={{ flex: 0, padding: 10, justifyContent: "space-between", flexDirection: 'row' }}>
         <TouchableOpacity onPress={() => this.handleDeskNavigate()}>
-          <Text>导航</Text>
+          <Text style={{ paddingHorizontal: 10 }}>导航</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => this.handleDeskUse()}>
-          <Text>{item.state === 0 ? '开始使用' : '提前释放'}</Text>
+          <Text style={{ paddingHorizontal: 10 }}>
+            {this.stateExchangeText[item.state]}</Text>
         </TouchableOpacity>
       </View>
     </View>
   }
   public handleSelect(path: string) {
-    Alert.alert(path);
+    this.setState({ visibleModal: true });
+    this.currentDeleteId = path;
   }
   public handleDeskNavigate() {
-
+    this._exchangeIndex(0);
   }
   public handleDeskUse() {
-
+    this.props.navigation.navigate('DeskScan')
   }
   public navigateToAdd() {
     this.props.navigation.navigate('AddDesk');
   }
+
+  public testBle() {
+
+  }
 }
+export default connect(
+  (state: any) => ({
+    user: state.loginIn.user,
+  })
+)(DeskMain)

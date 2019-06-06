@@ -20,7 +20,7 @@ export default class Main extends Component<MainProps, MainState> {
   //是不是和tabNav冲突了，所以不生效
   static navigationOptions = ({ navigation }) => {
     return {
-      headerTitle:'首页'
+      headerTitle: '首页'
     }
   };
 
@@ -38,11 +38,11 @@ export default class Main extends Component<MainProps, MainState> {
   };
   private linkData1: Array<any> =
     [{ text: '会议管理', source: require('./../../asserts/images/icon-1.png'), link: 'MeetMain' },
-    { text: '办公管理', source: require('./../../asserts/images/icon-2.png'), link: 'Toe' },
+    { text: '办公管理', source: require('./../../asserts/images/icon-2.png'), link: 'DeskMain' },
     { text: '云打印', source: require('./../../asserts/images/icon-3.png'), link: 'PrintMain' }]
   private linkData2: Array<any> =
     [
-      { text: '请假', source: require('./../../asserts/images/icon-4.png'), link: 'Toe' },
+      { text: '请假', source: require('./../../asserts/images/icon-4.png'), link: 'TestBle' },
       { text: '项目', source: require('./../../asserts/images/icon-5.png'), link: 'Toe' },
       { text: '合同', source: require('./../../asserts/images/icon-6.png'), link: 'Toe' },
       { text: '出差', source: require('./../../asserts/images/icon-7.png'), link: 'Toe' },

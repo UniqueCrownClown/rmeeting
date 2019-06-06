@@ -1,19 +1,22 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { StyleSheet, TextInput, Text, TouchableOpacity, View, Alert } from 'react-native';
-import XButton from '../../components/XButton';
-import { NavigationScreenProp } from 'react-navigation';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Modal from "react-native-modal";
+import { NavigationScreenProp } from 'react-navigation';
+import { connect } from 'react-redux';
+import XButton from '../../components/XButton';
+import { bookMeeting } from '../../api';
 declare interface AddMeetProps {
-  navigation: NavigationScreenProp<any>
+  navigation: NavigationScreenProp<any>,
+  user: IUser
 }
 declare interface AddMeetState {
   station: string;
   meetTime: string;
   meetPerson: string;
   visibleModal: boolean;
+  text: string
 }
-export default class AddMeet extends Component<AddMeetProps, AddMeetState> {
+class AddMeet extends Component<AddMeetProps, AddMeetState> {
   static navigationOptions = ({ navigation }) => {
     return {
       headerTitle: '添加会议',
@@ -23,13 +26,17 @@ export default class AddMeet extends Component<AddMeetProps, AddMeetState> {
       />),
     }
   };
+  private persons: any;
+  private meetTime: any;
+  private meetDate: any;
   constructor(props: AddMeetProps) {
     super(props);
     this.state = {
-      station: '会议室1',
+      station: '请选择',
       meetTime: '8:00-9:00',
       meetPerson: '张三,李四',
-      visibleModal: false
+      visibleModal: false,
+      text: ''
     }
   }
   static propTypes = {
@@ -38,18 +45,30 @@ export default class AddMeet extends Component<AddMeetProps, AddMeetState> {
     this.props.navigation.setParams({ complateBook: this._complateBook })
   }
 
-  _complateBook() {
-    Alert.alert('提交');
+  async _complateBook() {
+    const { text, station } = this.state;
+    const xx = {
+      subject: text,
+      room: station,
+      meetingDate: this.meetDate,
+      startTime: this.meetTime.substring(0, 5),
+      endTime: this.meetTime.substring(5),
+      participants: this.persons
+    }
+    const response = await bookMeeting(xx)
   }
 
   render() {
-    const persons = this.props.navigation.getParam('persons', '请选择');
-    const meetTime = this.props.navigation.getParam('meetTime', '请选择');
+    this.persons = this.props.navigation.getParam('persons', '请选择');
+    this.meetTime = this.props.navigation.getParam('meetTime', 'x');
+    this.meetDate = this.props.navigation.getParam('meetDate', 'x');
     return (
       <View style={styles.addMeetContainer}>
         <View style={[styles.meetSubject, styles.publicCell]}>
           <Text style={styles.publicText}>会议主题</Text>
-          <TextInput style={styles.sInput}></TextInput>
+          <TextInput style={styles.sInput}
+            onChangeText={(text) => this.setState({ text })}
+            value={this.state.text} />
         </View>
         <TouchableOpacity onPress={this.toModal} style={styles.publicCell}>
           <Text style={styles.publicText}>参会地点</Text>
@@ -57,11 +76,11 @@ export default class AddMeet extends Component<AddMeetProps, AddMeetState> {
         </TouchableOpacity>
         <TouchableOpacity style={styles.publicCell} onPress={this.navigateTo.bind(this, 'MeetTime')}>
           <Text style={styles.publicText}>参会时间</Text>
-          <Text style={styles.publicText}>{meetTime}</Text>
+          <Text style={styles.publicText}>{this.meetTime === 'x' ? '请选择' : `${this.meetTime}(${this.meetDate})`}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.publicCell} onPress={this.navigateTo.bind(this, 'MeetPerson')}>
           <Text style={styles.publicText}>参会人员</Text>
-          <Text style={styles.publicText}>{persons}</Text>
+          <Text style={styles.publicText}>{this.persons}</Text>
         </TouchableOpacity>
         <Modal
           isVisible={this.state.visibleModal}
@@ -96,6 +115,12 @@ export default class AddMeet extends Component<AddMeetProps, AddMeetState> {
   }
 }
 
+export default connect(
+  (state: any) => ({
+    user: state.loginIn.user,
+  })
+)(AddMeet)
+
 const styles = StyleSheet.create({
   addMeetContainer: {
     flex: 0,
@@ -118,7 +143,6 @@ const styles = StyleSheet.create({
     textAlign: 'right'
   },
   meetSubject: {
-
   },
   meetStation: {
   },

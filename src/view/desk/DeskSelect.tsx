@@ -4,6 +4,7 @@ import { NavigationScreenProp } from "react-navigation";
 import XButton from "../../components/XButton";
 import { allUpdate, getUpdate } from "../../utils/timeSpace";
 import DeskMain from "./DeskMain";
+import { getDeskState } from "../../api";
 declare interface DeskStateItem {
   id: string,
   isActive: boolean,
@@ -42,10 +43,33 @@ export default class DeskSelect extends Component<DeskSelectProps, DeskSelectSta
     }
   };
   componentDidMount() {
-    this.props.navigation.setParams({ navigateTo: this.navigateTo })
+    this.props.navigation.setParams({ navigateTo: this.navigateTo });
+    this.queryData();
+  }
+  async queryData() {
+    const queryDate = this.props.navigation.getParam('queryDate', null);
+    let { deskState } = this.state;
+    if (queryDate !== null) {
+      const { status, data } = await getDeskState(queryDate[0], queryDate[1]);
+      if (status === 200) {
+        data.forEach(element => {
+          const index = deskState.findIndex(item => item.id === element);
+          deskState[index].isAble = false;
+        });
+        this.setState({ deskState: deskState })
+      }
+    } else {
+      Alert.alert('请先选择使用日期');
+      this.setState({ deskState: allUpdate(deskState, { isAble: false }) })
+    }
+
   }
   navigateTo = () => {
     const returnId = this.state.deskState.find(element => element.isActive === true).id;
+    if (returnId === undefined) {
+      Alert.alert('还没选择，请先选择工位~~~');
+      return;
+    }
     this.props.navigation.navigate('AddDesk', {
       deskNumber: returnId
     })
@@ -78,7 +102,7 @@ export default class DeskSelect extends Component<DeskSelectProps, DeskSelectSta
     const newData = getUpdate(allUpdate(deskState, { isActive: false }), index, { isActive: !temp })
     this.setState({
       deskState: newData
-    })
+    });
   }
   public getXXX(item: DeskStateItem) {
     if (!item.isAble) return require('./../../asserts/images/unable-desk.png');
