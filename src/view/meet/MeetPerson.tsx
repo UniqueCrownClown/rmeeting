@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
-import { element, any } from "prop-types";
-import { getUpdate } from "../../utils/timeSpace";
+import { Alert, StyleSheet, View } from "react-native";
+import { getLinkMan } from "../../api";
 import SelectItem, { ISelectItem } from "../../components/SelectItem";
 import XButton from "../../components/XButton";
-import { getLinkMan } from "../../api";
+import { getUpdate } from "../../utils/timeSpace";
 
 declare interface MeetPersonProps {
   navigation: any

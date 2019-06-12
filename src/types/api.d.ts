@@ -141,3 +141,19 @@ declare interface PrintFileResponseItem {
   size: number,
   uploadTime: string
 }
+declare interface PrintSceneItem {
+  fileCount: number,
+  id: string,
+  sceneName: string,
+  token: string
+}
+declare interface ReponseQueryFile {
+  extraName: string,
+  fileName: string,
+  filePath: string,
+  id: string,
+  md5: string,
+  scene: object,
+  size: number,
+  uploadTime: string
+}

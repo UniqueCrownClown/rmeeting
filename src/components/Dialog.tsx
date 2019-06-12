@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Modal from "react-native-modal";
-import { thenmeColor } from '../config';
+import { themeColor } from '../config';
 
 
 declare interface DialogProps {
@@ -26,7 +26,7 @@ export default class Dialog extends Component<DialogProps, DialogState> {
   renderButton = (text: string, onPress: () => void) => (
     <TouchableOpacity onPress={onPress}>
       <View style={{ width: 160 }}>
-        <Text style={{ textAlign: 'center', padding: 16, color: thenmeColor }}>{text}</Text>
+        <Text style={{ textAlign: 'center', padding: 16, color: themeColor }}>{text}</Text>
       </View>
     </TouchableOpacity>
   );

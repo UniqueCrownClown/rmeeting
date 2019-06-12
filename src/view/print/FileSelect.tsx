@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet, View, Text, Button, Alert, TextInput, TouchableOpacity, Easing
-} from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import RNFS from 'react-native-fs';
-import { FileItem } from '../../components/FileList';
-import { element } from 'prop-types';
-import { getUpdate } from '../../utils/timeSpace';
-import HorizontalItem from '../../components/HorizontalItem';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { NavigationScreenProp } from 'react-navigation';
+import { FileItem } from '../../components/FileList';
+import HorizontalItem from '../../components/HorizontalItem';
+import XButton from '../../components/XButton';
+import { themeColor } from '../../config';
+import { getUpdate } from '../../utils/timeSpace';
 const styles = StyleSheet.create({
   fileSelectContainer: {
-    flex: 1
+    flex: 1,
   },
   countView: {
     marginHorizontal: 20,
@@ -25,6 +25,9 @@ const styles = StyleSheet.create({
     flex: 0,
     justifyContent: 'flex-start',
     flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: '#e5e5e5',
+    paddingVertical: 10
   },
   breadCumbContainer: {
     flex: 0,
@@ -33,12 +36,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 10
   },
   breadCumbText: {
-    fontSize: 18
+    fontSize: 18,
+    color: '#333'
   },
   fileListItem: {
     height: 50,
-    borderBottomWidth: 1,
-    borderColor: '#f5f5f5',
     flex: 0,
     flexDirection: 'row',
     alignItems: 'center',
@@ -61,7 +63,7 @@ const styles = StyleSheet.create({
     flex: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'skyblue'
+    backgroundColor: themeColor
   },
   incircle: {
     width: 16,
@@ -73,11 +75,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#ddd'
   },
   incircleActive: {
-    backgroundColor: 'skyblue'
+    backgroundColor: themeColor
   },
 })
 declare interface FileSelectProps {
-  navigation: any
+  navigation: NavigationScreenProp<any>
 }
 declare interface FileSelectState {
   haha: Array<FileItem>,
@@ -92,21 +94,28 @@ export default class FileSelect extends Component<FileSelectProps, FileSelectSta
     };
   }
   static navigationOptions = ({ navigation }) => {
+    const rendText = `确定(${navigation.getParam('count')})`;
     return {
       headerTitle: '文件选择',
       headerBackTitle: '云打印',
-      headerRight: (
-        <View style={styles.countView}>
-          <Text style={styles.countViewText}>确定</Text>
-          <Text style={styles.countViewText}>({navigation.getParam('count')})</Text>
-        </View>
-      ),
+      headerRight: (<XButton
+        onClick={navigation.getParam('complateSelect', () => { Alert.alert('ddaad') })}
+        text={rendText}
+      />)
     }
   };
   private uploadFilesPath: string[] = [];
   public render() {
     return <View style={styles.fileSelectContainer}>
-      <TextInput placeholder='搜索' style={{ textAlign: 'center' }} />
+      <View style={{ flex: 0, alignItems: 'center', padding: 10 }}>
+        <TextInput placeholder='搜索'
+          style={{
+            textAlign: 'center',
+            width: 320, height: 40,
+            borderRadius: 40,
+            backgroundColor: '#f5f5f5'
+          }} />
+      </View>
       <View style={styles.breadCumbWrap}>{this.renderBreadCumb(this.state.breadList)}</View>
       <View style={{ flex: 1 }}>
         <HorizontalItem items={this.state.haha}
@@ -121,7 +130,7 @@ export default class FileSelect extends Component<FileSelectProps, FileSelectSta
   public renderBreadCumb = (items: string[]) => {
     return items.map((item) => <View key={item} style={styles.breadCumbContainer}>
       {this.renderButton(item)}
-      <Text style={styles.breadCumbText}>>></Text>
+      <Text style={styles.breadCumbText}> >></Text>
     </View>)
   }
 
@@ -137,7 +146,7 @@ export default class FileSelect extends Component<FileSelectProps, FileSelectSta
         <Text style={styles.fileListItemText}>{item.name}</Text>
       </View>
       {item.isDictory ? <Icon name="angle-right" size={18} color="#666" style={{ marginHorizontal: 6 }} /> :
-        this.renderRadio(item.isSelect)}
+        this.judgeIsUse(item.name) ? this.renderRadio(item.isSelect) : null}
     </View>;
 
   public renderRadio = (isSelect: boolean) =>
@@ -149,7 +158,10 @@ export default class FileSelect extends Component<FileSelectProps, FileSelectSta
   componentDidMount() {
     const rnfsPath = RNFS.ExternalStorageDirectoryPath;
     this.queryDirectory(rnfsPath);
-    this.props.navigation.setParams({ count: 0 });
+    this.props.navigation.setParams({ count: 0, complateSelect: this._complateSelect.bind(this) });
+  }
+  _complateSelect() {
+    Alert.alert(this.uploadFilesPath.toString())
   }
 
   handleSelect(path: string): void {
@@ -169,10 +181,9 @@ export default class FileSelect extends Component<FileSelectProps, FileSelectSta
         const index = this.uploadFilesPath.findIndex(element => element === path);
         this.uploadFilesPath.splice(index, 1);
       }
-      const updataData = getUpdate(haha, filterIndex, { isSelect: !isSelect })
-      this.setState({ haha: updataData });
-      const cc = updataData.filter(element => element.isSelect === true).length
-      this._navigateCount(cc);
+      const updateData = getUpdate(haha, filterIndex, { isSelect: !isSelect })
+      this.setState({ haha: updateData });
+      this._navigateCount(this.uploadFilesPath.length);
     }
 
   }
@@ -194,21 +205,19 @@ export default class FileSelect extends Component<FileSelectProps, FileSelectSta
     RNFS.readDir(path)
       .then((result) => {
         let temp: Array<FileItem> = [];
-        let tempSelect: boolean = false;
         result.forEach(element => {
-          if (this.uploadFilesPath.includes(element.path)) {
-            tempSelect = true;
+          const tempSelect: boolean = this.uploadFilesPath.includes(element.path) ? true : false;
+          if (!element.name.startsWith('.')) {
+            temp.push({
+              name: element.name,
+              time: element.mtime.toLocaleDateString(),
+              path: element.path,
+              isDictory: element.isDirectory(),
+              isSelect: tempSelect
+            })
           }
-          temp.push({
-            name: element.name,
-            time: element.mtime.toLocaleDateString(),
-            path: element.path,
-            isDictory: element.isDirectory(),
-            isSelect: tempSelect
-          })
         });
-        temp.sort((a, b) => (Number(a.name) - Number(b.name)))
-        this.setState({ haha: temp });
+        this.setState({ haha: this.filterByLetter(temp) });
       }).catch((err) => {
         console.log(err.message, err.code);
       });
@@ -238,5 +247,39 @@ export default class FileSelect extends Component<FileSelectProps, FileSelectSta
 
   public _navigateCount(index: number) {
     this.props.navigation.setParams({ count: index });
+  }
+  filterByLetter = (entrys: Array<any>) => {
+    let temp: string[] = [];
+    let result: Array<any> = [];
+    entrys.forEach(element => {
+      if (!element.name.startsWith('.')) {
+        temp.push(element.name.toLocaleUpperCase());
+      }
+    });
+    const sortTemp = temp.sort();
+    sortTemp.forEach(element => {
+      const ff: any = entrys.find(
+        entry => entry.name.toLocaleUpperCase() === element
+      );
+      result.push(ff);
+    });
+    const dirResult = result.filter(element => element.isDirectory);
+    const fileResult = result.filter(element => !element.isDirectory);
+    const returnResult = [...dirResult, ...fileResult];
+    return returnResult;
+  };
+  judgeIsUse = (fileName: string) => {
+    const suffix = ['word',
+      'ppt',
+      'photo',
+      'pdf',
+      'txt',
+      'xlsx'];
+    for (let i = 0; i < suffix.length; i++) {
+      if (fileName.endsWith(suffix[i])) {
+        return true
+      }
+    }
+    return false
   }
 }

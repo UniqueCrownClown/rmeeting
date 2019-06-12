@@ -40,9 +40,12 @@ export default class HorizontalItem extends Component<HorizontalItemProps, Horiz
     super(props);
     this.state = { rowIndex: null }
   }
-  private swipeoutBtns = [{ text: '删除', onPress: () => Alert.alert('dadadad') }];
+  private swipeoutBtns = (path: string) => [{
+    text: '删除',
+    onPress: () => { this.props.swiperPress ? this.props.swiperPress(path) : Alert.alert(path) }
+  }];
   public renderItem = (item: BasicItem, index: number) =>
-    <Swipeout right={this.swipeoutBtns}
+    <Swipeout right={this.swipeoutBtns(item.path)}
       onOpen={() => (this.onSwipeOpen(index))}
       close={this.state.rowIndex !== index}
       onClose={() => (this.onSwipeClose(index))}

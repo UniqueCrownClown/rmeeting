@@ -1,6 +1,7 @@
 import axios from 'axios';
 import config from '../config';
 import WrapperParams from '../utils/wrapperParams'
+import LoadingUtil from '../utils/LoadingUtil';
 // 全局设置
 axios.defaults.timeout = 5000;
 axios.defaults.headers.post['Content-Type'] =
@@ -9,7 +10,25 @@ axios.defaults.headers.post['Content-Type'] =
 const instance = axios.create();
 instance.defaults.headers.post['Content-Type'] =
   'application/json;charset=UTF-8';
+// 添加请求拦截器
+instance.interceptors.request.use(function (config) {
+  // 在发送请求之前做些什么
+  LoadingUtil.showLoading();
+  return config;
+}, function (error) {
+  // 对请求错误做些什么
+  return Promise.reject(error);
+});
 
+// 添加响应拦截器
+instance.interceptors.response.use(function (response) {
+  // 对响应数据做点什么
+  LoadingUtil.dismissLoading();
+  return response;
+}, function (error) {
+  // 对响应错误做点什么
+  return Promise.reject(error);
+});
 const getParams = (params: any) => {
   return new WrapperParams(params).getValues()
 }
@@ -117,13 +136,13 @@ export const setPrintScreen = (params: PrintScreenParams) =>
   instance.post(`${config.IP}:${config.PORT}${config.prefix}/printer/print-file-scene`, getParams(params));
 // 查询场景
 export const getPrintScreen = (staffNum: string) =>
-  instance.get(`${config.IP}:${config.PORT}${config.prefix}/printer/print-file-scene/${staffNum}`)
+  instance.get<Array<PrintSceneItem> & string>(`${config.IP}:${config.PORT}${config.prefix}/printer/print-file-scene/${staffNum}`)
 // 删除场景
 export const delPrintScene = (sceneId: string) =>
   instance.delete(`${config.IP}:${config.PORT}${config.prefix}/printer/print-file-scene/${sceneId}`)
 // 查询指定场景id下的文件列表
 export const getPrintFile = (sceneId: string) =>
-  instance.get(`${config.IP}:${config.PORT}${config.prefix}/printer/file/${sceneId}`)
+  instance.get<Array<ReponseQueryFile> & string>(`${config.IP}:${config.PORT}${config.prefix}/printer/file/${sceneId}`)
 // 用户删除文件
 export const delPrintFile = (fileId: string) =>
   instance.delete(`${config.IP}:${config.PORT}${config.prefix}/printer/file/${fileId}`)
