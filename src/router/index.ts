@@ -43,7 +43,7 @@ const RootStack = createStackNavigator(
     TestBle: { screen: TestBle }
   },
   {
-    initialRouteName: 'PrintMain',
+    initialRouteName: 'AddDesk',
     defaultNavigationOptions: {
       headerStyle: {
         backgroundColor: '#137BFE',

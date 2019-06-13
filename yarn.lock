@@ -5199,10 +5199,10 @@ react-native-calendars@^1.101.0:
     prop-types "^15.5.10"
     xdate "^0.8.0"
 
-react-native-camera@2.2.2:
-  version "2.2.2"
-  resolved "https://registry.npm.taobao.org/react-native-camera/download/react-native-camera-2.2.2.tgz#2636e3ec681aef5a786ae7856820ee64e59fa060"
-  integrity sha1-Jjbj7Gga71p4aueFaCDuZOWfoGA=
+react-native-camera@^2.10.2:
+  version "2.10.2"
+  resolved "https://registry.npm.taobao.org/react-native-camera/download/react-native-camera-2.10.2.tgz#2aafc6171b0586c32f76232903836135bb7a2655"
+  integrity sha1-Kq/GFxsFhsMvdiMpA4NhNbt6JlU=
   dependencies:
     prop-types "^15.6.2"
 

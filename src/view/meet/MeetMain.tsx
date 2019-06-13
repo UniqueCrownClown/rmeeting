@@ -152,7 +152,7 @@ class MeetMain extends Component<MeetMainProps, MeetMainState, Context<string>> 
   public renderMeetItem = (data: MeetItem) =>
     <View style={{ flex: 0, width: 750, paddingVertical: 10, justifyContent: 'flex-start', flexDirection: 'row' }}>
       <View style={{ paddingHorizontal: 20 }}>
-        <Clock time={data.startTime} />
+        <Clock time={data.startTime} state={data.meetingStatus}/>
       </View>
       <View style={{ flex: 1 }}>
         <Text style={{ fontSize: 20 }}>{data.name}</Text>

@@ -1,13 +1,15 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Image, Alert, Text, TouchableOpacity, } from "react-native";
-import TabTitle, { TabTitleItem } from "../../components/TabTitle";
-import HorizontalItem, { BasicItem } from "../../components/HorizontalItem";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
-import { getDeskList, releaseDesk } from "../../api";
 import { connect } from "react-redux";
+import { getDeskList, releaseDesk } from "../../api";
 import Dialog from "../../components/Dialog";
+import HorizontalItem, { BasicItem } from "../../components/HorizontalItem";
+import TabTitle, { TabTitleItem } from "../../components/TabTitle";
+import { themeColor } from "../../config";
 declare interface DeskDataItem extends BasicItem {
   state: number,
+  station: string,
   timeSpace: string
 }
 declare interface DeskMainProps {
@@ -45,7 +47,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 40,
-    backgroundColor: 'skyblue',
+    backgroundColor: themeColor,
   },
   deskItemContainer: {
     width: 320,
@@ -69,14 +71,15 @@ const styles = StyleSheet.create({
 class DeskMain extends Component<DeskMainProps, DeskMainState> {
   currentDeleteId: string = '';
   async queryDelete() {
+    this.setState({ visibleModal: false });
     if (this.currentDeleteId != '') {
       const { data, status } = await releaseDesk(this.currentDeleteId);
+      console.log(data);
       if (status === 200) {
         this.currentDeleteId = '';
         this.queryData();
       }
     }
-
 
   }
   private stateText = ['未使用', '使用中'];
@@ -86,7 +89,7 @@ class DeskMain extends Component<DeskMainProps, DeskMainState> {
     this.state = {
       visibleModal: false,
       showIndex: 1,
-      deskData: [{ name: '2', path: 'dsda', state: 0, timeSpace: '2019.05.30-2019.05.32' }]
+      deskData: [{ name: 'dsda', path: 'dsda', state: 0, station: '2', timeSpace: '2019.05.30-2019.05.32' }]
     }
   }
   static navigationOptions = ({ navigation }) => {
@@ -114,10 +117,10 @@ class DeskMain extends Component<DeskMainProps, DeskMainState> {
   async queryData() {
     const { status, data } = await getDeskList(this.props.user.staffNum);
     if (status === 200) {
-      console.log(data);
       const deskData = data.map(item => {
         return {
-          name: item.stationNum,
+          station: item.stationNum,
+          name: item.qrToken,
           path: item.qrToken,
           state: item.status,
           timeSpace: `${item.startDate}-${item.endDate}`
@@ -152,28 +155,29 @@ class DeskMain extends Component<DeskMainProps, DeskMainState> {
     <View style={styles.navigateInnerCircle}></View>
   </View>
   public renderDeskList = (deskData: Array<any>) => {
-    return <View style={{ flex: 0, alignItems: 'center', width: 320 }}>
-      <HorizontalItem
-        items={deskData}
-        handleSelect={this.handleSelect.bind(this)}
-        disableSwiper={true}
-        type={this.renderDeskItem} />
+    return <View style={{ flex: 1, alignItems: 'center', width: 320 }}>
       <TouchableOpacity
         style={styles.addDeskContainer}
         onPress={() => this.navigateToAdd()}>
         <Text style={{ fontSize: 30 }}>工位预约</Text>
       </TouchableOpacity>
+      <HorizontalItem
+        items={deskData}
+        handleSelect={this.handleSelect.bind(this)}
+        disableSwiper={true}
+        type={this.renderDeskItem} />
       <Dialog
         visibleModal={this.state.visibleModal}
         success={() => this.queryDelete()}
+        content='残忍删除该预定??'
         cancel={() => this.setState({ visibleModal: false })}
       />
     </View>
   }
   public renderDeskItem = (item: DeskDataItem) => {
     return <View style={styles.deskItemContainer}>
-      <View style={{ backgroundColor: '#5060fe', flex: 1, padding: 10 }}>
-        <Text style={{ fontWeight: '700', fontSize: 18, color: '#ffffff' }}>{`${item.name}号工位`}</Text>
+      <View style={{ backgroundColor: themeColor, flex: 1, padding: 10 }}>
+        <Text style={{ fontWeight: '700', fontSize: 18, color: '#ffffff' }}>{`${item.station}号工位`}</Text>
         <Text style={{ paddingHorizontal: 10, paddingVertical: 4, color: '#ffffff' }}>{item.timeSpace}</Text>
         <Text style={{ paddingHorizontal: 10, paddingVertical: 4, color: '#ffffff' }}>{this.stateText[item.state]}</Text>
       </View>

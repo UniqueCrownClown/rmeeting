@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Modal from "react-native-modal";
 import { NavigationScreenProp } from 'react-navigation';
-import { connect } from 'react-redux';
-import XButton from '../../components/XButton';
 import { bookMeeting } from '../../api';
+import XButton from '../../components/XButton';
+import { connect } from 'react-redux';
 declare interface AddMeetProps {
   navigation: NavigationScreenProp<any>,
   user: IUser
@@ -14,7 +14,9 @@ declare interface AddMeetState {
   meetTime: string;
   meetPerson: string;
   visibleModal: boolean;
-  text: string
+  text: string,
+  visibleDialog: boolean,
+  responseData: string
 }
 class AddMeet extends Component<AddMeetProps, AddMeetState> {
   static navigationOptions = ({ navigation }) => {
@@ -36,13 +38,15 @@ class AddMeet extends Component<AddMeetProps, AddMeetState> {
       meetTime: '8:00-9:00',
       meetPerson: '张三,李四',
       visibleModal: false,
-      text: ''
+      text: '',
+      visibleDialog: false,
+      responseData: ''
     }
   }
   static propTypes = {
   }
   componentDidMount() {
-    this.props.navigation.setParams({ complateBook: this._complateBook })
+    this.props.navigation.setParams({ complateBook: this._complateBook.bind(this) })
   }
 
   async _complateBook() {
@@ -55,7 +59,9 @@ class AddMeet extends Component<AddMeetProps, AddMeetState> {
       endTime: this.meetTime.substring(5),
       participants: this.persons
     }
-    const response = await bookMeeting(xx)
+    const response = await bookMeeting(xx);
+    console.log(response);
+    this.props.navigation.navigate('MeetMain');
   }
 
   render() {
@@ -67,7 +73,7 @@ class AddMeet extends Component<AddMeetProps, AddMeetState> {
         <View style={[styles.meetSubject, styles.publicCell]}>
           <Text style={styles.publicText}>会议主题</Text>
           <TextInput style={styles.sInput}
-            onChangeText={(text) => this.setState({ text })}
+            onChangeText={(textValue) => this.setState({ text: textValue })}
             value={this.state.text} />
         </View>
         <TouchableOpacity onPress={this.toModal} style={styles.publicCell}>

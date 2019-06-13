@@ -161,7 +161,7 @@ export default class FileSelect extends Component<FileSelectProps, FileSelectSta
     this.props.navigation.setParams({ count: 0, complateSelect: this._complateSelect.bind(this) });
   }
   _complateSelect() {
-    Alert.alert(this.uploadFilesPath.toString())
+    this.props.navigation.replace('PrintFile', { uploadFilesPath: this.uploadFilesPath })
   }
 
   handleSelect(path: string): void {

@@ -35,7 +35,7 @@ class AddDesk extends Component<AddDeskProps, AddDeskState> {
   constructor(props: AddDeskProps) {
     super(props);
     this.state = {
-      timeSpace: '2019/06/07-2019/06/08',
+      timeSpace: '请选择',
       deskName: '请选择',
       isShowCalendar: false,
       markedDates: new Map<string, object>()

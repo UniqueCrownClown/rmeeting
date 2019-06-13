@@ -13,7 +13,7 @@ declare interface DialogProps {
   cancel: () => void
 }
 declare interface DialogState {
-  textValue: string
+  textValue: string,
 }
 export default class Dialog extends Component<DialogProps, DialogState> {
   constructor(props: DialogProps) {
