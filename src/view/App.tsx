@@ -5,6 +5,7 @@ import { AppContainer } from '../router'
 import NavigationService from '../router/NavigationService';
 import { View } from 'react-native';
 import MyLoading from '../components/MyLoading';
+import Dialog from '../components/Dialog';
 
 const store = configureStore();
 
@@ -24,6 +25,13 @@ export default class App extends Component {
             global.mLoadingComponentRef = ref;
           }}
         />}
+        {
+          <Dialog
+            ref={(ref) => {
+              global.mDialogComponentRef = ref;
+            }}
+          />
+        }
       </View>
     );
   }

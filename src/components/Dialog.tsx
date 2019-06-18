@@ -1,64 +1,80 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Modal from "react-native-modal";
 import { themeColor } from '../config';
 
 
 declare interface DialogProps {
-  visibleModal: boolean,
-  title?: string,
-  isInput?: boolean,
-  content?: string,
-  success: (inputText?: string) => void,
-  cancel: () => void
 }
-declare interface DialogState {
-  textValue: string,
+declare interface DialogState extends DialogData {
+  visibleModal: boolean
 }
+
 export default class Dialog extends Component<DialogProps, DialogState> {
+  toCancel(): void {
+    this.state.cancel && this.state.cancel();
+    this.setState({
+      visibleModal: false
+    });
+  }
+  toSuccess(): void {
+    this.state.success && this.state.success();
+    this.setState({
+      visibleModal: false
+    });
+  }
   constructor(props: DialogProps) {
     super(props);
     this.state = {
-      textValue: ''
+      title: '提示',
+      content: '',
+      visibleModal: false,
+      success: () => { Alert.alert('haha') }
     };
   }
 
-  renderButton = (text: string, onPress: () => void) => (
+  static renderButton = (text: string, onPress: () => void) => (
     <TouchableOpacity onPress={onPress}>
       <View style={{ width: 160 }}>
-        <Text style={{ textAlign: 'center', padding: 16, color: themeColor }}>{text}</Text>
+        <Text style={{ textAlign: 'center', padding: 18, color: themeColor }}>{text}</Text>
       </View>
     </TouchableOpacity>
   );
 
   public render() {
-    const { title, visibleModal, isInput, content } = this.props;
+    const { visibleModal, title, content } = this.state;
     return <Modal
       isVisible={visibleModal}
       animationIn="slideInLeft"
       animationOut="slideOutRight">
-      {this.renderModalContent(title, isInput, content)}
+      {this.renderModalContent(title, content)}
     </Modal>
   }
 
-  renderModalContent = (title: string, isInput: boolean, content: string) => (
+  renderModalContent = (title: string, content: string) => (
     <View style={styles.modalContent}>
-      <View style={{ width: 320, borderBottomColor: '#ccc', borderBottomWidth: 1, padding: 20 }}>
+      <View style={{ width: 320, padding: 20 }}>
         <Text style={{ textAlign: 'center', fontWeight: '700', fontSize: 18 }}>{title ? title : '提示'}</Text>
       </View>
-      <View style={{ width: 320, padding: 20 }}>
-        {isInput ? <TextInput placeholder="场景值" value={this.state.textValue} onChangeText={(text) => this.setState({ textValue: text })}></TextInput> : null}
+      <View style={{ width: 320, padding: 10, height: 100 }}>
         {content ? <Text>{content}</Text> : null}
       </View>
       <View style={{
-        width: 320, borderTopWidth: 1, borderTopColor: '#ccc',
+        width: 320, borderTopWidth: 1, borderTopColor: '#e5e5e5',
         flex: 0, flexDirection: 'row'
       }}>
-        {this.renderButton("确定", () => this.props.success(this.state.textValue))}
-        {this.renderButton("取消", () => this.props.cancel())}
+        {Dialog.renderButton("确定", () => this.toSuccess())}
+        <View style={{ width: 1, backgroundColor: '#e5e5e5' }} />
+        {Dialog.renderButton("取消", () => this.toCancel())}
       </View>
     </View>
   );
+  showDialog(aa: DialogData) {
+    this.setState({
+      visibleModal: true,
+      ...aa
+    })
+  }
 }
 const styles = StyleSheet.create({
   modalContent: {

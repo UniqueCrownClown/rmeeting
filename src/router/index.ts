@@ -43,7 +43,7 @@ const RootStack = createStackNavigator(
     TestBle: { screen: TestBle }
   },
   {
-    initialRouteName: 'AddDesk',
+    initialRouteName: 'AddMeet',
     defaultNavigationOptions: {
       headerStyle: {
         backgroundColor: '#137BFE',

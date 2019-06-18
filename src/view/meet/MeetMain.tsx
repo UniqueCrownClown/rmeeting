@@ -2,11 +2,12 @@ import React, { Component, Context } from 'react';
 import { Text, View } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 import { connect } from 'react-redux';
-import { getMeeting } from '../../api';
+import { getMeeting, deleteMeet } from '../../api';
 import Clock from '../../components/Clock';
 import HorizontalItem, { BasicItem, GroupBasicItem } from '../../components/HorizontalItem';
 import TabTitle, { TabTitleItem } from '../../components/TabTitle';
 import XButton from '../../components/XButton';
+import DialogUtil from '../../utils/DialogUtil';
 export declare interface MeetItem extends BasicItem {
   startTime: string,
   endTime: string,
@@ -32,7 +33,7 @@ interface MeetMainState {
   unfinishMeetData: Array<GroupMeetItem>,
 }
 class MeetMain extends Component<MeetMainProps, MeetMainState, Context<string>> {
-  private responseArr:Array<ResponseMeet> = [];
+  private responseArr: Array<ResponseMeet> = [];
   constructor(props: MeetMainProps) {
     super(props);
     this.state = {
@@ -138,6 +139,7 @@ class MeetMain extends Component<MeetMainProps, MeetMainState, Context<string>> 
     return <View>
       <HorizontalItem sessions={showIndex === 0 ? unfinishMeetData : finishMeetData}
         handleSelect={this.handleSelect.bind(this)}
+        swiperPress={this.swiperPress.bind(this)}
         type={this.renderMeetItem}
         isGroup={true} />
     </View>
@@ -148,17 +150,28 @@ class MeetMain extends Component<MeetMainProps, MeetMainState, Context<string>> 
       detailData: this.responseArr.find(element => element.id === path)
     })
   }
+  async swiperPress(path: string) {
+    const response = await deleteMeet(path);
+    const { data } = response;
+    if (data === 'success') {
+      this.queryData();
+    } else {
+      DialogUtil.showDialog({
+        content: '删除失败'
+      })
+    }
+  }
 
   public renderMeetItem = (data: MeetItem) =>
     <View style={{ flex: 0, width: 750, paddingVertical: 10, justifyContent: 'flex-start', flexDirection: 'row' }}>
       <View style={{ paddingHorizontal: 20 }}>
-        <Clock time={data.startTime} state={data.meetingStatus}/>
+        <Clock time={data.startTime} state={data.meetingStatus} />
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 20 }}>{data.name}</Text>
-        <View>
-          <Text>{data.startTime}-{data.endTime}</Text>
-          <Text>{data.room}</Text>
+        <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>{data.name}</Text>
+        <View style={{ width: 240, flex: 0, justifyContent: 'space-between', flexDirection: 'row' }}>
+          <Text style={{ padding: 10 }}>{data.startTime}-{data.endTime}</Text>
+          <Text style={{ padding: 10 }}>{data.room}号会议室</Text>
         </View>
       </View>
     </View>;

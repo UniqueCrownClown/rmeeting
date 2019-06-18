@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Alert, FlatList, SectionList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Swipeout from "react-native-swipeout";
+import Swipeout, { SwipeoutButtonProperties } from "react-native-swipeout";
 export declare interface BasicItem {
   name: string,
   path: string
@@ -40,8 +40,9 @@ export default class HorizontalItem extends Component<HorizontalItemProps, Horiz
     super(props);
     this.state = { rowIndex: null }
   }
-  private swipeoutBtns = (path: string) => [{
+  private swipeoutBtns = (path: string): SwipeoutButtonProperties[] => [{
     text: '删除',
+    type: 'delete',
     onPress: () => { this.props.swiperPress ? this.props.swiperPress(path) : Alert.alert(path) }
   }];
   public renderItem = (item: BasicItem, index: number) =>

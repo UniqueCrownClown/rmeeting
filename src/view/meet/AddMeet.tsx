@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Modal from "react-native-modal";
 import { NavigationScreenProp } from 'react-navigation';
-import { bookMeeting } from '../../api';
-import XButton from '../../components/XButton';
 import { connect } from 'react-redux';
+import { bookMeeting } from '../../api';
+import ActionSheet from '../../components/ActionSheet';
+import XButton from '../../components/XButton';
 declare interface AddMeetProps {
   navigation: NavigationScreenProp<any>,
   user: IUser
@@ -31,6 +31,7 @@ class AddMeet extends Component<AddMeetProps, AddMeetState> {
   private persons: any;
   private meetTime: any;
   private meetDate: any;
+  private selectItem: string[] = ['会议室1', '会议室2', '会议室3'];
   constructor(props: AddMeetProps) {
     super(props);
     this.state = {
@@ -88,31 +89,18 @@ class AddMeet extends Component<AddMeetProps, AddMeetState> {
           <Text style={styles.publicText}>参会人员</Text>
           <Text style={styles.publicText}>{this.persons}</Text>
         </TouchableOpacity>
-        <Modal
-          isVisible={this.state.visibleModal}
-          style={styles.bottomModal}>
-          {this.renderModalContent()}
-        </Modal>
+        <ActionSheet
+          visibleModal={this.state.visibleModal}
+          selectItem={this.selectItem}
+          handleSelect={this.handleModalSelect.bind(this)}
+        />
       </View>
     )
   }
-  renderModalContent() {
-    const selectItem = ['会议室1', '会议室2', '会议室3'];
-    return <View style={styles.modalContent}>
-      {
-        selectItem.map((item, index) =>
-          this.renderButton(item, index, () => {
-            this.setState({ visibleModal: false, station: item });
-          }
-          ))
-      }
-    </View>
+  handleModalSelect(text: string) {
+    this.setState({ station: text, visibleModal: false })
   }
-  renderButton = (text: string, index: number, onPress: () => void) => (
-    <TouchableOpacity style={styles.modalItem} onPress={onPress} key={index}>
-      <Text>{text}</Text>
-    </TouchableOpacity>
-  );
+
   toModal = () => {
     this.setState({ visibleModal: true })
   }
@@ -155,25 +143,5 @@ const styles = StyleSheet.create({
   meetTime: {
   },
   meetPerson: {
-  },
-  modalItem: {
-    width: 375,
-    height: 40,
-    backgroundColor: "#f5f5f5",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 10,
-    height: 160,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 4,
-    borderColor: "rgba(0, 0, 0, 0.1)",
-  },
-  bottomModal: {
-    justifyContent: "flex-end",
-    margin: 0,
   },
 })

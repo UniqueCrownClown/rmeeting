@@ -3,10 +3,10 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { getDeskList, releaseDesk } from "../../api";
-import Dialog from "../../components/Dialog";
 import HorizontalItem, { BasicItem } from "../../components/HorizontalItem";
 import TabTitle, { TabTitleItem } from "../../components/TabTitle";
 import { themeColor } from "../../config";
+import DialogUtil from "../../utils/DialogUtil";
 declare interface DeskDataItem extends BasicItem {
   state: number,
   station: string,
@@ -19,7 +19,6 @@ declare interface DeskMainProps {
 declare interface DeskMainState {
   showIndex: number,
   deskData: Array<DeskDataItem>,
-  visibleModal: boolean
 }
 const styles = StyleSheet.create({
   DeskMainContainer: {
@@ -57,7 +56,7 @@ const styles = StyleSheet.create({
     borderColor: '#cccccc',
   },
   addDeskContainer: {
-    height: 200,
+    height: 160,
     borderRadius: 4,
     borderWidth: 1,
     borderColor: '#cccccc',
@@ -71,7 +70,6 @@ const styles = StyleSheet.create({
 class DeskMain extends Component<DeskMainProps, DeskMainState> {
   currentDeleteId: string = '';
   async queryDelete() {
-    this.setState({ visibleModal: false });
     if (this.currentDeleteId != '') {
       const { data, status } = await releaseDesk(this.currentDeleteId);
       console.log(data);
@@ -87,7 +85,6 @@ class DeskMain extends Component<DeskMainProps, DeskMainState> {
   constructor(props: DeskMainProps) {
     super(props);
     this.state = {
-      visibleModal: false,
       showIndex: 1,
       deskData: [{ name: 'dsda', path: 'dsda', state: 0, station: '2', timeSpace: '2019.05.30-2019.05.32' }]
     }
@@ -138,7 +135,8 @@ class DeskMain extends Component<DeskMainProps, DeskMainState> {
   public render() {
     const { deskData } = this.state;
     return <View style={styles.DeskMainContainer}>
-      {this.state.showIndex === 0 ? DeskMain.renderRoomMap(require('./../../asserts/images/desk-map-color.png')) : this.renderDeskList(deskData)}
+      {this.state.showIndex === 0 ?
+        DeskMain.renderRoomMap(require('./../../asserts/images/desk-map-color.png')) : this.renderDeskList(deskData)}
     </View>
   }
   static renderRoomMap = (mapPath: any, isLocation: boolean = true) => {
@@ -154,7 +152,7 @@ class DeskMain extends Component<DeskMainProps, DeskMainState> {
   }, styles.navigateCircle]}>
     <View style={styles.navigateInnerCircle}></View>
   </View>
-  public renderDeskList = (deskData: Array<any>) => {
+  public renderDeskList = (deskData: Array<DeskDataItem>) => {
     return <View style={{ flex: 1, alignItems: 'center', width: 320 }}>
       <TouchableOpacity
         style={styles.addDeskContainer}
@@ -166,14 +164,9 @@ class DeskMain extends Component<DeskMainProps, DeskMainState> {
         handleSelect={this.handleSelect.bind(this)}
         disableSwiper={true}
         type={this.renderDeskItem} />
-      <Dialog
-        visibleModal={this.state.visibleModal}
-        success={() => this.queryDelete()}
-        content='残忍删除该预定??'
-        cancel={() => this.setState({ visibleModal: false })}
-      />
     </View>
   }
+
   public renderDeskItem = (item: DeskDataItem) => {
     return <View style={styles.deskItemContainer}>
       <View style={{ backgroundColor: themeColor, flex: 1, padding: 10 }}>
@@ -183,17 +176,25 @@ class DeskMain extends Component<DeskMainProps, DeskMainState> {
       </View>
       <View style={{ flex: 0, padding: 10, justifyContent: "space-between", flexDirection: 'row' }}>
         <TouchableOpacity onPress={() => this.handleDeskNavigate()}>
-          <Text style={{ paddingHorizontal: 10 }}>导航</Text>
+          <View>
+            <Text style={{ paddingHorizontal: 10 }}>导航</Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => this.handleDeskUse()}>
-          <Text style={{ paddingHorizontal: 10 }}>
-            {this.stateExchangeText[item.state]}</Text>
+          <View>
+            <Text style={{ paddingHorizontal: 10 }}>
+              {this.stateExchangeText[item.state]}</Text>
+          </View>
         </TouchableOpacity>
       </View>
     </View>
   }
   public handleSelect(path: string) {
-    this.setState({ visibleModal: true });
+    DialogUtil.showDialog({
+      title: '提示',
+      content: '残忍删除该预定?~~',
+      success: () => this.queryDelete()
+    })
     this.currentDeleteId = path;
   }
   public handleDeskNavigate() {
@@ -206,9 +207,6 @@ class DeskMain extends Component<DeskMainProps, DeskMainState> {
     this.props.navigation.navigate('AddDesk');
   }
 
-  public testBle() {
-
-  }
 }
 export default connect(
   (state: any) => ({

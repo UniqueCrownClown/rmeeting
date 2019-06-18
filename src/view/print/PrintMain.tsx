@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Alert, Image, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, TextInput, View } from 'react-native';
+import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationScreenProp } from 'react-navigation';
 import { connect } from 'react-redux';
-import { delPrintScene, getPrintScreen } from '../../api';
+import { delPrintScene, getPrintScreen, setPrintScreen } from '../../api';
 import Dialog from '../../components/Dialog';
 import HorizontalItem, { BasicItem } from '../../components/HorizontalItem';
 import XButton from '../../components/XButton';
@@ -18,7 +19,8 @@ declare interface PrintMainProps {
 }
 declare interface PrintMainState {
   haha: Array<PrintItem>,
-  visibleModal: boolean
+  visibleModal: boolean,
+  textValue: string
 }
 class PrintMain extends Component<PrintMainProps, PrintMainState> {
   constructor(props: PrintMainProps) {
@@ -26,6 +28,7 @@ class PrintMain extends Component<PrintMainProps, PrintMainState> {
     this.state = {
       haha: [{ name: 'item1', path: '1111path', fileCount: 1, token: '123456' }],
       visibleModal: false,
+      textValue: ''
     };
   }
   static navigationOptions = ({ navigation }) => {
@@ -73,18 +76,25 @@ class PrintMain extends Component<PrintMainProps, PrintMainState> {
           swiperPress={this.handleDelete.bind(this)}
           type={this.renderPrintMain} />
       </View>
-      <Dialog
-        title='新建场景'
-        isInput={true}
-        visibleModal={this.state.visibleModal}
-        success={(text) => this.handleCreate(text)}
-        cancel={() => this.showModal(false)}
-      />
+      <Modal
+        isVisible={this.state.visibleModal}
+        animationIn="slideInLeft"
+        animationOut="slideOutRight">
+        {this.renderModalContent}
+      </Modal>
     </View>
   }
-  handleCreate(text: string): void {
+  handleCreate(): void {
+    const sceneName = this.state.textValue;
+    const response = setPrintScreen({
+      staffNum: this.props.user.staffNum,
+      sceneName: sceneName
+    });
+    console.log(response);
     this.showModal(false);
-    Alert.alert(text);
+  }
+  handleCancel() {
+    this.setState({ visibleModal: false, textValue: '' })
   }
 
   handleSelect(path: string): void {
@@ -113,6 +123,29 @@ class PrintMain extends Component<PrintMainProps, PrintMainState> {
         <Icon name="angle-right" size={20} color="#666" />
       </View>
     </View>;
+
+  public renderModalContent() {
+    return (
+      <View style={styles.modalContent}>
+        <View style={{ width: 320, borderBottomColor: '#ccc', borderBottomWidth: 1, padding: 20 }}>
+          <Text style={{ textAlign: 'center', fontWeight: '700', fontSize: 18 }}>新建场景</Text>
+        </View>
+        <View style={{ width: 320, padding: 20 }}>
+          <TextInput placeholder="场景值"
+            value={this.state.textValue}
+            onChangeText={(text) => this.setState({ textValue: text })}>
+          </TextInput>
+        </View>
+        <View style={{
+          width: 320, borderTopWidth: 1, borderTopColor: '#ccc',
+          flex: 0, flexDirection: 'row'
+        }}>
+          {Dialog.renderButton("新建", () => this.handleCreate())}
+          {Dialog.renderButton("取消", () => this.handleCancel())}
+        </View>
+      </View>
+    );
+  }
 }
 export default connect(
   (state: any) => ({
