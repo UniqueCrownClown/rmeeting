@@ -43,7 +43,7 @@ const RootStack = createStackNavigator(
     TestBle: { screen: TestBle }
   },
   {
-    initialRouteName: 'AddMeet',
+    initialRouteName: 'FileSelect',
     defaultNavigationOptions: {
       headerStyle: {
         backgroundColor: '#137BFE',

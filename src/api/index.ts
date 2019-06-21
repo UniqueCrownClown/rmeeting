@@ -2,6 +2,7 @@ import axios from 'axios';
 import config from '../config';
 import WrapperParams from '../utils/wrapperParams'
 import LoadingUtil from '../utils/LoadingUtil';
+import DialogUtil from '../utils/DialogUtil';
 // 全局设置
 axios.defaults.timeout = 5000;
 axios.defaults.headers.post['Content-Type'] =
@@ -24,6 +25,11 @@ instance.interceptors.request.use(function (config) {
 instance.interceptors.response.use(function (response) {
   // 对响应数据做点什么
   LoadingUtil.dismissLoading();
+  if(response.status !==200){
+    DialogUtil.showDialog({
+      content:'服务器请求异常~~~'
+    });
+  }
   return response;
 }, function (error) {
   // 对响应错误做点什么

@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet, View, Text, Button, Alert
-} from 'react-native';
-import { transform } from '@babel/core';
+import { StyleSheet, View } from 'react-native';
 const styles = StyleSheet.create({
   clockOuter: {
     width: 60,
@@ -52,6 +49,11 @@ export default class Clock extends Component<ClockProps, ClockState> {
     "#0A4191",
     "#CECECE"
   ];
+  shouldComponentUpdate(nextProps: ClockProps) { // 应该使用这个方法，否则无论props是否有变化都将会导致组件跟着重新渲染
+    if (nextProps.time === this.props.time) {
+      return false
+    }
+  }
   public render() {
     const { time } = this.props;
     return <View style={[styles.clockOuter, this.getBackColor(time)]}>
@@ -76,14 +78,14 @@ export default class Clock extends Component<ClockProps, ClockState> {
       value = this.colorCollection[3];
     }
     else if (time < 12) {
-        value =  this.colorCollection[0];
-        }
-        else if (time < 19) {
-        value = this.colorCollection[1];
-    } else {
-      value= this.colorCollection[2];
+      value = this.colorCollection[0];
     }
-    return { backgroundColor: value } 
+    else if (time < 19) {
+      value = this.colorCollection[1];
+    } else {
+      value = this.colorCollection[2];
+    }
+    return { backgroundColor: value }
   }
 
 }

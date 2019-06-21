@@ -8,6 +8,7 @@ import { delPrintScene, getPrintScreen, setPrintScreen } from '../../api';
 import Dialog from '../../components/Dialog';
 import HorizontalItem, { BasicItem } from '../../components/HorizontalItem';
 import XButton from '../../components/XButton';
+import { themeColor } from '../../config';
 export declare interface PrintItem extends BasicItem {
   fileCount: number,
   time?: string,
@@ -76,12 +77,7 @@ class PrintMain extends Component<PrintMainProps, PrintMainState> {
           swiperPress={this.handleDelete.bind(this)}
           type={this.renderPrintMain} />
       </View>
-      <Modal
-        isVisible={this.state.visibleModal}
-        animationIn="slideInLeft"
-        animationOut="slideOutRight">
-        {this.renderModalContent}
-      </Modal>
+      {this.renderModalContent()}
     </View>
   }
   handleCreate(): void {
@@ -126,24 +122,31 @@ class PrintMain extends Component<PrintMainProps, PrintMainState> {
 
   public renderModalContent() {
     return (
-      <View style={styles.modalContent}>
-        <View style={{ width: 320, borderBottomColor: '#ccc', borderBottomWidth: 1, padding: 20 }}>
-          <Text style={{ textAlign: 'center', fontWeight: '700', fontSize: 18 }}>新建场景</Text>
+      <Modal
+        isVisible={this.state.visibleModal}
+        animationIn="slideInLeft"
+        animationOut="slideOutRight">
+        <View style={styles.modalContent}>
+          <View style={{ width: 320, padding: 10 }}>
+            <Text style={{ textAlign: 'center', fontWeight: '700', fontSize: 18 }}>新建场景</Text>
+          </View>
+          <View style={{ width: 320, padding: 10 }}>
+            <TextInput placeholder="场景值"
+              style={{ textAlign: 'center', borderWidth: 1,borderColor:themeColor }}
+              value={this.state.textValue}
+              onChangeText={(text) => this.setState({ textValue: text })}>
+            </TextInput>
+          </View>
+          <View style={{
+            width: 320, borderTopWidth: 1, borderTopColor: '#e5e5e5',
+            flex: 0, flexDirection: 'row'
+          }}>
+            {Dialog.renderButton("新建", () => this.handleCreate())}
+            <View style={{ width: 1, backgroundColor: '#e5e5e5' }} />
+            {Dialog.renderButton("取消", () => this.handleCancel())}
+          </View>
         </View>
-        <View style={{ width: 320, padding: 20 }}>
-          <TextInput placeholder="场景值"
-            value={this.state.textValue}
-            onChangeText={(text) => this.setState({ textValue: text })}>
-          </TextInput>
-        </View>
-        <View style={{
-          width: 320, borderTopWidth: 1, borderTopColor: '#ccc',
-          flex: 0, flexDirection: 'row'
-        }}>
-          {Dialog.renderButton("新建", () => this.handleCreate())}
-          {Dialog.renderButton("取消", () => this.handleCancel())}
-        </View>
-      </View>
+      </Modal>
     );
   }
 }
@@ -172,7 +175,6 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "white",
-    padding: 22,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 4,
